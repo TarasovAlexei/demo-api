@@ -25,8 +25,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ],
         ),
         new GetCollection(),
-        new Post(),
-        new Patch(),
+        new Post(
+            security: 'is_granted("ROLE_PUBLICATION_CREATE")',
+        ),
+        new Patch(
+            security: 'is_granted("ROLE_PUBLICATION_EDIT")',
+        ),
         new Delete(),
     ],
     normalizationContext: [
