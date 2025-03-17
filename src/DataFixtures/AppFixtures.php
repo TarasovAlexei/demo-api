@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\User;
 use App\Factory\PublicationFactory;
 use App\Factory\UserFactory;
+use App\Factory\ApiTokenFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -30,6 +31,12 @@ class AppFixtures extends Fixture
         PublicationFactory::createMany(40, function () {
             return [
                 'author' => UserFactory::random(),
+            ];
+        });
+
+        ApiTokenFactory::createMany(30, function () {
+            return [
+                'ownedBy' => UserFactory::random(),
             ];
         });
 
