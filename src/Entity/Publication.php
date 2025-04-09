@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
@@ -81,6 +82,10 @@ class Publication
     #[Groups(['publication:read', 'publication:write'])]
     private ?User $author = null;
 
+    #[ApiFilter(BooleanFilter::class)]
+    #[Groups(['admin:read', 'admin:write'])]
+    private ?bool $isPublished = null;
+
     public function __construct()
     {
         $this->publishedAt = new \DateTimeImmutable();
@@ -159,6 +164,18 @@ class Publication
     public function setAuthor(?User $author): static
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function isPublished(): ?bool
+    {
+        return $this->isPublished;
+    }
+
+    public function setIsPublished(bool $isPublished): static
+    {
+        $this->isPublished = $isPublished;
 
         return $this;
     }

@@ -38,6 +38,8 @@ final class PublicationFactory extends PersistentProxyObjectFactory
             'summary' => self::faker()->text(255),
             'title' => self::faker()->text(255),
             'author' => UserFactory::new(),
+            'isPublished' => self::faker()->boolean(),
+
         ];
     }
 
