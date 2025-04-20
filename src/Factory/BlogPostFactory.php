@@ -35,6 +35,7 @@ final class BlogPostFactory extends PersistentProxyObjectFactory
             'content' => self::faker()->text(),
             'isPublished' => self::faker()->boolean(),
             'title' => self::faker()->text(255),
+            'author' => UserFactory::new(),
         ];
     }
 

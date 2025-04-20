@@ -19,7 +19,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     shortName: 'Post',
     operations: [
-        new Get(),
+        new Get(
+            normalizationContext: [
+                'groups' => ['post:read', 'post:item:get'],
+            ],
+        ),
         new GetCollection(),
         new Post(),
         new Patch(),
@@ -42,12 +46,12 @@ class BlogPost
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:read', 'post:write'])]
+    #[Groups(['post:read', 'post:write', 'user:read', 'user:write'])]
     #[Assert\NotBlank]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['post:read', 'post:write'])]
+    #[Groups(['post:read', 'post:write', 'user:read', 'user:write'])]
     #[Assert\NotBlank]
     private ?string $content = null;
 
@@ -55,7 +59,12 @@ class BlogPost
     private ?\DateTimeImmutable $createdAt;
 
     #[ORM\Column]
-    private ?bool $isPublished = null;
+    private ?bool $isPublished = true;
+
+    #[ORM\ManyToOne(inversedBy: 'blogPosts')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['post:read', 'post:write'])]
+    private ?User $author = null;
 
     public function __construct()
     {
@@ -104,6 +113,18 @@ class BlogPost
     public function setIsPublished(bool $isPublished): static
     {
         $this->isPublished = $isPublished;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): static
+    {
+        $this->author = $author;
 
         return $this;
     }
