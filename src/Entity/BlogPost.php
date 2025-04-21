@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
@@ -39,6 +40,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     paginationItemsPerPage: 10
 
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/posts.{_format}',
+    shortName: 'Post',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'user_id' => new Link(
+            fromProperty: 'blogPosts',
+            fromClass: User::class,
+        ),
+    ],
+    normalizationContext: [
+        'groups' => ['post:read'],
+    ],
 )]
 class BlogPost
 {
