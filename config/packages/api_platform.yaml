@@ -5,3 +5,9 @@ api_platform:
         stateless: false
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
+
+    swagger:
+        api_keys:
+            access_token:
+                name: Authorization
+                type: header
