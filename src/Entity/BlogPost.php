@@ -32,7 +32,13 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: [
         'groups' => ['post:write'],
     ],
-    paginationItemsPerPage: 10
+    paginationItemsPerPage: 10,
+    formats: [
+        'jsonld',
+        'json',
+        'html',
+        'csv' => 'text/csv',
+    ],
 )]
 class BlogPost
 {
