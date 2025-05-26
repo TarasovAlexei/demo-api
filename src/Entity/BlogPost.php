@@ -21,7 +21,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     shortName: 'Post',
     operations: [
-        new Get(),
+        new Get(
+            normalizationContext: [
+                'groups' => ['post:read', 'post:item:get'],
+            ],
+        ),
         new GetCollection(),
         new Post(),
         new Patch(),
@@ -49,14 +53,14 @@ class BlogPost
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:read', 'post:write'])]
+    #[Groups(['post:read', 'post:write', 'user:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 50)]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:read', 'post:write'])]
+    #[Groups(['post:read', 'post:write', 'user:read'])]
     #[Assert\NotBlank]
     private ?string $content = null;
 
