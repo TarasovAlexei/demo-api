@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Link;
 use App\Repository\BlogPostRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -43,6 +44,20 @@ use Symfony\Component\Validator\Constraints as Assert;
         'json',
         'html',
         'csv' => 'text/csv',
+    ],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/posts.{_format}',
+    shortName: 'Post',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'user_id' => new Link(
+            fromProperty: 'blogPosts',
+            fromClass: User::class,
+        ),
+    ],
+    normalizationContext: [
+        'groups' => ['post:read'],
     ],
 )]
 class BlogPost
