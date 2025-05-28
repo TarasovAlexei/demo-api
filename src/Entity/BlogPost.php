@@ -53,20 +53,20 @@ class BlogPost
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:read', 'post:write', 'user:read'])]
+    #[Groups(['post:read', 'post:write', 'user:read', 'user:write'])]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 50)]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:read', 'post:write', 'user:read'])]
+    #[Groups(['post:read', 'post:write', 'user:read', 'user:write'])]
     #[Assert\NotBlank]
     private ?string $content = null;
 
     #[ORM\Column]
     #[ApiFilter(BooleanFilter::class)]
-    private ?bool $isPublished = null;
+    private ?bool $isPublished = true;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -74,6 +74,7 @@ class BlogPost
     #[ORM\ManyToOne(inversedBy: 'blogPosts')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['post:read', 'post:write'])]
+    #[Assert\Valid]
     private ?User $author = null;
 
     public function __construct()

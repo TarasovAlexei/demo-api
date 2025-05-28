@@ -49,19 +49,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['user:read', 'user:write', 'post:item:get'])]
+    #[Groups(['user:read', 'user:write', 'post:item:get', 'post:write'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['user:read', 'user:write', 'post:item:get'])]
+    #[Groups(['user:read', 'user:write', 'post:item:get', 'post:write'])]
     private ?string $lastName = null;
 
     /**
      * @var Collection<int, BlogPost>
      */
-    #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author')]
-    #[Groups(['user:read'])]
+    #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author', cascade: ['persist'])]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\Valid]
     private Collection $blogPosts;
 
     public function __construct()
