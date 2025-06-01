@@ -40,6 +40,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
+     /* Scopes given during API authentication */
+    private ?array $accessTokenScopes = null;
+
     /**
      * @var string The hashed password
      */
@@ -109,10 +112,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
+        if (null === $this->accessTokenScopes) {
+            // logged in via the full user mechanism
+            $roles = $this->roles;
+            $roles[] = 'ROLE_FULL_USER';
+        } else {
+            $roles = $this->accessTokenScopes;
+        }
+
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
+        
         return array_unique($roles);
     }
 
@@ -244,5 +254,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             ->map(fn (ApiToken $token) => $token->getToken())
             ->toArray()
         ;
+    }
+
+    public function markAsTokenAuthenticated(array $scopes)
+    {
+        $this->accessTokenScopes = $scopes;
     }
 }
