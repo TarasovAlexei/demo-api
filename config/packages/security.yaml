@@ -22,6 +22,7 @@ security:
                 password_path: password
             logout:
                 path: app_logout
+            # overridden in OpenApiFactoryDecorator
             access_token:
                 token_handler: App\Security\ApiTokenHandler
 
