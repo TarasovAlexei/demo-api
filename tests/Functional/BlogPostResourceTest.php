@@ -4,12 +4,12 @@ namespace App\Tests\Functional;
 
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Browser\Test\HasBrowser;
+use Zenstruck\Browser\Json;
+use Zenstruck\Browser\HttpOptions;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
-class BlogPostResourceTest extends KernelTestCase
+class BlogPostResourceTest extends ApiTestCase
 {
-    use HasBrowser;
     use ResetDatabase;
 
     public function testToCreatePost(): void
@@ -22,14 +22,13 @@ class BlogPostResourceTest extends KernelTestCase
                 'json' => [],
             ])
             ->assertStatus(422)
-            ->post('/api/posts', [
-                'json' => [
-                    'title' => 'The title',
-                    'content' => 'The content',
-                    'author' => '/api/users/'.$user->getId(),
-                ],
-            ])
+            ->post('/api/posts', HttpOptions::json([
+                'title' => 'The title',
+                'content' => 'The content',
+                'author' => '/api/users/'.$user->getId(),
+            ]))
             ->assertStatus(201)
+            ->dump()
             ->assertJsonMatches('title', 'The title')
         ;
     }
