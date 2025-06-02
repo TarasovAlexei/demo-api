@@ -2,15 +2,19 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\ApiToken;
 use App\Factory\UserFactory;
+use App\Factory\ApiTokenFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Browser\Json;
 use Zenstruck\Browser\HttpOptions;
 use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Test\Factories;
 
 class BlogPostResourceTest extends ApiTestCase
 {
     use ResetDatabase;
+    use Factories;
 
     public function testToCreatePost(): void
     {
@@ -28,8 +32,41 @@ class BlogPostResourceTest extends ApiTestCase
                 'author' => '/api/users/'.$user->getId(),
             ]))
             ->assertStatus(201)
-            ->dump()
             ->assertJsonMatches('title', 'The title')
+        ;
+    }
+
+    public function testToCreatePostWithApiKey(): void
+    {
+        $token = ApiTokenFactory::createOne([
+            'scopes' => [ApiToken::SCOPE_POST_CREATE]
+        ]);
+
+        $this->browser()
+            ->post('/api/posts', [
+                'json' => [],
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getToken()
+                ]
+            ])
+            ->assertStatus(422)
+        ;
+    }
+
+    public function testToCreatePostDeniedWithoutScope(): void
+    {
+        $token = ApiTokenFactory::createOne([
+            'scopes' => [ApiToken::SCOPE_POST_EDIT]
+        ]);
+
+        $this->browser()
+            ->post('/api/posts', [
+                'json' => [],
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getToken()
+                ]
+            ])
+            ->assertStatus(403)
         ;
     }
 }
