@@ -4,6 +4,7 @@ namespace App\Tests\Functional;
 
 use App\Entity\ApiToken;
 use App\Factory\UserFactory;
+use App\Factory\BlogPostFactory;
 use App\Factory\ApiTokenFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Browser\Json;
@@ -65,6 +66,36 @@ class BlogPostResourceTest extends ApiTestCase
                 'headers' => [
                     'Authorization' => 'Bearer '.$token->getToken()
                 ]
+            ])
+            ->assertStatus(403)
+        ;
+    }
+
+    public function testToUpdatePost()
+    {
+        $user = UserFactory::createOne();
+        $post = BlogPostFactory::createOne(['author' => $user]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    'title' => 'The title',
+                ],
+            ])
+            ->assertStatus(200)
+            ->assertJsonMatches('title', 'The title')
+        ;
+
+
+        $user2 = UserFactory::createOne();
+
+        $this->browser()
+            ->actingAs($user2)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    'title' => 'New title',
+                ],
             ])
             ->assertStatus(403)
         ;
