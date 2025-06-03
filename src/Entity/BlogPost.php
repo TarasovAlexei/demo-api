@@ -32,8 +32,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: 'is_granted("ROLE_POST_CREATE")',
         ),
         new Patch(
-            security: 'is_granted("ROLE_POST_EDIT") and object.getAuthor() == user',
-            securityPostDenormalize: 'object.getAuthor() == user',
+            security: 'is_granted("EDIT", object)',
+            securityPostDenormalize: 'is_granted("EDIT", object)',
         ),
         new Delete(),
     ],
