@@ -99,5 +99,16 @@ class BlogPostResourceTest extends ApiTestCase
             ])
             ->assertStatus(403)
         ;
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    // change the author to someone else
+                    'author' => '/api/users/'.$user2->getId(),
+                ],
+            ])
+            ->assertStatus(403)
+        ;
     }
 }
