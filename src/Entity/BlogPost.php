@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
@@ -86,6 +87,8 @@ class BlogPost
 
     #[ORM\Column]
     #[ApiFilter(BooleanFilter::class)]
+    #[Groups(['post:read', 'post:write'])]
+    #[ApiProperty(security: 'is_granted("EDIT", object)')]
     private ?bool $isPublished = true;
 
     #[ORM\Column]
