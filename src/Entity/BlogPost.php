@@ -17,6 +17,8 @@ use App\Repository\BlogPostRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\IsValidAuthor;
+
 
 
 #[ORM\Entity(repositoryClass: BlogPostRepository::class)]
@@ -34,7 +36,6 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Patch(
             security: 'is_granted("EDIT", object)',
-            securityPostDenormalize: 'is_granted("EDIT", object)',
         ),
         new Delete(),
     ],
@@ -98,6 +99,8 @@ class BlogPost
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['post:read', 'post:write'])]
     #[Assert\Valid]
+    #[IsValidAuthor]
+    #[Assert\NotNull]
     private ?User $author = null;
 
     public function __construct()

@@ -108,7 +108,7 @@ class BlogPostResourceTest extends ApiTestCase
                     'author' => '/api/users/'.$user2->getId(),
                 ],
             ])
-            ->assertStatus(403)
+            ->assertStatus(422)
         ;
     }
 
