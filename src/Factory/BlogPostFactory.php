@@ -34,7 +34,7 @@ final class BlogPostFactory extends PersistentProxyObjectFactory
         return [
             'content' => self::faker()->text(255),
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'isPublished' => self::faker()->boolean(),
+            'isPublished' => true,
             'title' => self::faker()->text(50),
             'author' => UserFactory::new(),
         ];

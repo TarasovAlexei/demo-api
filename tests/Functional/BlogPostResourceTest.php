@@ -125,7 +125,7 @@ class BlogPostResourceTest extends ApiTestCase
     {
         $user = UserFactory::new()->create();
         $post = BlogPostFactory::createOne([
-            'isPublished' => false,
+            'isPublished' => true,
             'author' => $user,
         ]);
 
@@ -138,7 +138,7 @@ class BlogPostResourceTest extends ApiTestCase
             ])
             ->assertStatus(200)
             ->assertJsonMatches('title', 'The title')
-            ->assertJsonMatches('isPublished', false)
+            ->assertJsonMatches('isPublished', true)
         ;
     }
 
