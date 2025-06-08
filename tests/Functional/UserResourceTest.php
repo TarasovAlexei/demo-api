@@ -3,6 +3,7 @@
 namespace App\Tests\Functional;
 
 use App\Factory\UserFactory;
+use App\Factory\BlogPostFactory;
 use Zenstruck\Foundry\Test\ResetDatabase;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -33,7 +34,7 @@ class UserResourceTest extends ApiTestCase
         ;
     }
 
-     public function testToUpdateUser(): void
+    public function testToUpdateUser(): void
     {
         $user = UserFactory::createOne();
 
@@ -46,5 +47,25 @@ class UserResourceTest extends ApiTestCase
                 'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(200);
-        }
+    }
+
+     public function testPostsCannotBeStolen(): void
+    {
+        $user = UserFactory::createOne();
+        $otherUser = UserFactory::createOne();
+        $blogPost = BlogPostFactory::createOne(['author' => $otherUser]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/users/' . $user->getId(), [
+                'json' => [
+                    'firstName' => 'changed',
+                    'blogPosts' => [
+                        '/api/posts/' . $blogPost->getId(),
+                    ],
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
+            ])
+            ->assertStatus(422);
+    }
 }
