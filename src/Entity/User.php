@@ -216,6 +216,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->blogPosts;
     }
 
+    #[Groups(['user:read'])]
+    #[SerializedName('blogPosts')]
+    public function getPublishedBlogPosts(): Collection
+    {
+        return $this->blogPosts->filter(static function (BlogPost $post) {
+            return $post->getIsPublished();
+        });
+    }
+
     public function addBlogPost(BlogPost $blogPost): static
     {
         if (!$this->blogPosts->contains($blogPost)) {

@@ -49,7 +49,7 @@ class UserResourceTest extends ApiTestCase
             ->assertStatus(200);
     }
 
-     public function testPostsCannotBeStolen(): void
+    public function testPostsCannotBeStolen(): void
     {
         $user = UserFactory::createOne();
         $otherUser = UserFactory::createOne();
@@ -67,5 +67,18 @@ class UserResourceTest extends ApiTestCase
                 'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(422);
+    }
+
+    public function testUnpublishedPostsNotReturned(): void
+    {
+        $user = UserFactory::createOne();
+        BlogPostFactory::createOne([
+            'isPublished' => false,
+            'author' => $user,
+        ]);
+        $this->browser()
+            ->actingAs(UserFactory::createOne())
+            ->get('/api/users/' . $user->getId())
+            ->assertJsonMatches('length("blogPosts")', 0);
     }
 }
