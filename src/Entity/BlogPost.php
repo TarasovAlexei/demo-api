@@ -19,6 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\IsValidAuthor;
+use App\State\BlogPostStateProvider;
 
 
 
@@ -53,6 +54,7 @@ use App\Validator\IsValidAuthor;
         'html',
         'csv' => 'text/csv',
     ],
+    provider: BlogPostStateProvider::class,
 )]
 #[ApiResource(
     uriTemplate: '/users/{user_id}/posts.{_format}',
