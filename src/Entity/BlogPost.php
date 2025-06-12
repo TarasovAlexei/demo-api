@@ -16,6 +16,7 @@ use ApiPlatform\Metadata\Link;
 use App\Repository\BlogPostRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\IsValidAuthor;
 
@@ -102,6 +103,12 @@ class BlogPost
     #[IsValidAuthor]
     private ?User $author = null;
 
+     /**
+     * @var bool Non-persisted property to help determine if the post is author by the authenticated user
+     */
+    private bool $isAuthorByAuthenticatedUser;
+
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -170,5 +177,20 @@ class BlogPost
         $this->author = $author;
 
         return $this;
+    }
+
+    #[Groups(['post:read'])]
+    #[SerializedName('isMine')]
+    public function isAuthorByAuthenticatedUser(): bool
+    {
+        if (!isset($this->isAuthorByAuthenticatedUser)) {
+            throw new \LogicException('You must call setIsAuthorByAuthenticatedUser() before isAuthorByAuthenticatedUser()');
+        }
+        return $this->isAuthorByAuthenticatedUser;
+    }
+
+    public function setIsAuthorByAuthenticatedUser(bool $isAuthorByAuthenticatedUser): void
+    {
+        $this->isAuthorByAuthenticatedUser = $isAuthorByAuthenticatedUser;
     }
 }
