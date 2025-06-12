@@ -21,6 +21,10 @@ class BlogPostSetAuthorProcessor implements ProcessorInterface
             $data->setAuthor($this->security->getUser());
         }
 
+        if ($data instanceof BlogPost) {
+            $data->setIsAuthorByAuthenticatedUser($data->getAuthor() === $this->security->getUser());
+        }
+
         return $this->innerProcessor->process($data, $operation, $uriVariables, $context);
     }
 }
