@@ -6,10 +6,12 @@ use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\BlogPost;
 use App\Entity\User;
+use App\State\EntityToDtoStateProvider;
 
 #[ApiResource(
     shortName: 'User',
     paginationItemsPerPage: 5,
+    provider: EntityToDtoStateProvider::class,
     stateOptions: new Options(entityClass: User::class),
 )]
 class UserApi
