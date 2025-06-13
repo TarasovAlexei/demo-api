@@ -61,6 +61,7 @@ class EntityToDtoStateProvider implements ProviderInterface
         $dto->firstName = $entity->getFirstName();
         $dto->lastName = $entity->getLastName();
         $dto->blogPosts = $entity->getBlogPosts()->toArray();
+        $dto->blogPosts = $entity->getPublishedBlogPosts()->getValues();
         $dto->flameThrowingDistance = rand(1, 10);
 
         return $dto;
