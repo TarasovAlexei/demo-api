@@ -28,4 +28,7 @@ class UserApi
      * @var array<int, BlogPost>
      */
     public array $blogPosts = [];
+
+    public int $popularity = 0;
+
 }

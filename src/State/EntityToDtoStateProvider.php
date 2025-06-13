@@ -30,11 +30,14 @@ class EntityToDtoStateProvider implements ProviderInterface
     private function mapEntityToDto(object $entity): object
     {
         $dto = new UserApi();
+        
         $dto->id = $entity->getId();
         $dto->email = $entity->getEmail();
         $dto->firstName = $entity->getFirstName();
         $dto->lastName = $entity->getLastName();
         $dto->blogPosts = $entity->getBlogPosts()->toArray();
+        $dto->flameThrowingDistance = rand(1, 10);
+
         return $dto;
     }
 }
