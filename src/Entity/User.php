@@ -2,44 +2,18 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
 use App\Repository\UserRepository;
-use App\Validator\PostsAllowedAuthorChange;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation\SerializedName;
 
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-#[ApiResource(
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(
-            security: 'is_granted("PUBLIC_ACCESS")',
-            validationContext: ['groups' => ['Default', 'postValidation']],
-        ),
-        new Patch(
-            security: 'is_granted("ROLE_USER_EDIT")'
-        ),
-        new Delete(),
-    ],
-    normalizationContext: ['groups' => ['user:read']],
-    denormalizationContext: ['groups' => ['user:write']],
-    security: 'is_granted("ROLE_USER")',
-)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -50,7 +24,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
      #[Assert\NotBlank]
     #[Assert\Email]
-    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     /**
@@ -68,28 +41,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[Groups(['user:write'])]
-    #[SerializedName('password')]
-    #[Assert\NotBlank(groups: ['postValidation'])]
+    #[Assert\NotBlank]
     private ?string $plainPassword = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['user:read', 'user:write', 'post:item:get', 'post:write'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['user:read', 'user:write', 'post:item:get', 'post:write'])]
     private ?string $lastName = null;
 
     /**
      * @var Collection<int, BlogPost>
      */
     #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author', cascade: ['persist'], orphanRemoval: true)]
-    #[Groups(['user:read', 'user:write'])]
     #[Assert\Valid]
-    #[PostsAllowedAuthorChange]
     private Collection $blogPosts;
 
     /**
@@ -216,8 +183,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->blogPosts;
     }
 
-    #[Groups(['user:read'])]
-    #[SerializedName('blogPosts')]
     public function getPublishedBlogPosts(): Collection
     {
         return $this->blogPosts->filter(static function (BlogPost $post) {
