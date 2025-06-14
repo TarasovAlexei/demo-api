@@ -3,6 +3,7 @@
 namespace App\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\State\Options;
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\BlogPost;
 use App\Entity\User;
@@ -17,7 +18,8 @@ use App\State\EntityClassDtoStateProcessor;
     stateOptions: new Options(entityClass: User::class),
 )]
 class UserApi
-{
+{   
+    #[ApiProperty(readable: false, writable: false, identifier: true)]
     public ?int $id = null;
 
     public ?string $email = null;
@@ -29,13 +31,16 @@ class UserApi
     /**
      * The plaintext password when being set or changed.
      */
+    #[ApiProperty(readable: false)]
     public ?string $password = null;
 
     /**
      * @var array<int, BlogPost>
      */
+    #[ApiProperty(writable: false)]
     public array $blogPosts = [];
 
+    #[ApiProperty(writable: false)]
     public int $popularity = 0;
 
 }
