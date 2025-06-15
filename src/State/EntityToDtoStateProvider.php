@@ -26,16 +26,14 @@ class EntityToDtoStateProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
+        $resourceClass = $operation->getClass();
         if ($operation instanceof CollectionOperationInterface) {
             $entities = $this->collectionProvider->provide($operation, $uriVariables, $context);
-
             assert($entities instanceof Paginator);
-
             $dtos = [];
             foreach ($entities as $entity) {
-                $dtos[] = $this->mapEntityToDto($entity);
+                $dtos[] = $this->mapEntityToDto($entity, $resourceClass);
             }
-
             return new TraversablePaginator(
                 new \ArrayIterator($dtos),
                 $entities->getCurrentPage(),
@@ -43,20 +41,16 @@ class EntityToDtoStateProvider implements ProviderInterface
                 $entities->getTotalItems()
             );
         }
-
         $entity = $this->itemProvider->provide($operation, $uriVariables, $context);
-
         if (!$entity) {
             return null;
         }
-
-        return $this->mapEntityToDto($entity);
-
+        return $this->mapEntityToDto($entity, $resourceClass);
     }
 
-    private function mapEntityToDto(object $entity): object
+    private function mapEntityToDto(object $entity, string $resourceClass): object
     {
-        return $this->microMapper->map($entity, UserApi::class);
+        return $this->microMapper->map($entity, $resourceClass);
     }
 }
 
