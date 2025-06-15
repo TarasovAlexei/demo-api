@@ -2,74 +2,10 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiProperty;
-use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Link;
 use App\Repository\BlogPostRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\SerializedName;
-use Symfony\Component\Validator\Constraints as Assert;
-use App\Validator\IsValidAuthor;
-use App\State\BlogPostStateProvider;
-
-
 
 #[ORM\Entity(repositoryClass: BlogPostRepository::class)]
-#[ApiResource(
-    shortName: 'Post',
-    operations: [
-        new Get(
-            normalizationContext: [
-                'groups' => ['post:read', 'post:item:get'],
-            ],
-        ),
-        new GetCollection(),
-        new Post(
-            security: 'is_granted("ROLE_POST_CREATE")',
-        ),
-        new Patch(
-            security: 'is_granted("EDIT", object)',
-        ),
-        new Delete(),
-    ],
-    normalizationContext: [
-        'groups' => ['post:read'],
-    ],
-    denormalizationContext: [
-        'groups' => ['post:write'],
-    ],
-    paginationItemsPerPage: 10,
-    formats: [
-        'jsonld',
-        'json',
-        'html',
-        'csv' => 'text/csv',
-    ],
-    provider: BlogPostStateProvider::class,
-)]
-#[ApiResource(
-    uriTemplate: '/users/{user_id}/posts.{_format}',
-    shortName: 'Post',
-    operations: [new GetCollection()],
-    uriVariables: [
-        'user_id' => new Link(
-            fromProperty: 'blogPosts',
-            fromClass: User::class,
-        ),
-    ],
-    normalizationContext: [
-        'groups' => ['post:read'],
-    ],
-)]
 class BlogPost
 {
     #[ORM\Id]
@@ -78,21 +14,12 @@ class BlogPost
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:read', 'post:write', 'user:read', 'user:write'])]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 2, max: 50)]
-    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:read', 'post:write', 'user:read', 'user:write'])]
-    #[Assert\NotBlank]
     private ?string $content = null;
 
     #[ORM\Column]
-    #[ApiFilter(BooleanFilter::class)]
-    #[Groups(['post:read', 'post:write'])]
-    #[ApiProperty(security: 'is_granted("EDIT", object)')]
     private ?bool $isPublished = true;
 
     #[ORM\Column]
@@ -100,15 +27,12 @@ class BlogPost
 
     #[ORM\ManyToOne(inversedBy: 'blogPosts')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['post:read', 'post:write'])]
-    #[Assert\Valid]
-    #[IsValidAuthor]
     private ?User $author = null;
 
      /**
      * @var bool Non-persisted property to help determine if the post is author by the authenticated user
      */
-    private bool $isAuthorByAuthenticatedUser;
+    private bool $isAuthorByAuthenticatedUser = false;
 
 
     public function __construct()
@@ -181,8 +105,6 @@ class BlogPost
         return $this;
     }
 
-    #[Groups(['post:read'])]
-    #[SerializedName('isMine')]
     public function isAuthorByAuthenticatedUser(): bool
     {
         if (!isset($this->isAuthorByAuthenticatedUser)) {
