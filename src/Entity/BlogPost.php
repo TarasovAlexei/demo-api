@@ -35,8 +35,9 @@ class BlogPost
     private bool $isAuthorByAuthenticatedUser = false;
 
 
-    public function __construct()
-    {
+    public function __construct(string $title = null)
+    {   
+        $this->title = $title;
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -48,13 +49,6 @@ class BlogPost
     public function getTitle(): ?string
     {
         return $this->title;
-    }
-
-    public function setTitle(string $title): static
-    {
-        $this->title = $title;
-
-        return $this;
     }
 
     public function getContent(): ?string

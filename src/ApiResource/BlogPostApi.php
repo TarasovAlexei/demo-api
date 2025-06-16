@@ -8,6 +8,8 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Entity\BlogPost;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
+use Symfony\Component\Validator\Constraints\NotBlank;
+
 
 #[ApiResource(
     shortName: 'Post',
@@ -21,7 +23,11 @@ class BlogPostApi
     #[ApiProperty(readable: false, writable: false, identifier: true)]
     public ?int $id = null;
 
+    #[NotBlank]
     public ?string $title = null;
+
+    #[NotBlank]
+    public ?string $content = null;
 
     public ?UserApi $author = null;
 
