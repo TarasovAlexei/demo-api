@@ -59,7 +59,7 @@ class UserApi
     public ?string $password = null;
 
     /**
-     * @var array<int, BlogPost>
+     * @var array<int, BlogPostApi>
      */
     #[ApiProperty(writable: false)]
     public array $blogPosts = [];

@@ -39,7 +39,9 @@ class BlogPostEntityToApiMapper implements MapperInterface
         assert($dto instanceof BlogPostApi);
 
         $dto->title = $entity->getTitle();
-        $dto->author = $this->microMapper->map($entity->getAuthor(), UserApi::class);
+        $dto->author = $this->microMapper->map($entity->getAuthor(), UserApi::class, [
+            MicroMapperInterface::MAX_DEPTH => 0,
+        ]);
         $dto->content = $entity->getContent();
         $dto->createdAt = $entity->getCreatedAt();
         $dto->isMine = $this->security->getUser() && $this->security->getUser() === $entity->getAuthor();
