@@ -53,5 +53,8 @@ class BlogPostApi
     public ?\DateTimeImmutable $createdAt = null;
 
     public ?bool $isMine = null;
+
+    #[ApiProperty(security: 'object === null or is_granted("EDIT", object)')]
+    public bool $isPublished = true;
     
 }

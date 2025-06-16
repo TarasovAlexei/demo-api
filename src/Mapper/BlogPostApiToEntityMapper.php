@@ -40,8 +40,8 @@ class BlogPostApiToEntityMapper implements MapperInterface
         assert($entity instanceof BlogPost);
 
         $entity->setContent($dto->content);
+        $entity->setIsPublished($dto->isPublished);
 
-        // TODO: set published
         return $entity;
 
     }

@@ -45,6 +45,7 @@ class BlogPostEntityToApiMapper implements MapperInterface
         $dto->content = $entity->getContent();
         $dto->createdAt = $entity->getCreatedAt();
         $dto->isMine = $this->security->getUser() && $this->security->getUser() === $entity->getAuthor();
+        $dto->isPublished = $entity->getIsPublished();
 
         return $dto;
     }
