@@ -5,6 +5,7 @@ namespace App\Validator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Bundle\SecurityBundle\Security;
+use App\ApiResource\UserApi;
 
 final class IsValidAuthorValidator extends ConstraintValidator
 {
@@ -24,7 +25,7 @@ final class IsValidAuthorValidator extends ConstraintValidator
         }
 
         // constraint is only meant to be used above a User property
-        assert($value instanceof User);
+        assert($value instanceof UserApi);
 
         $user = $this->security->getUser();
         if (!$user) {
@@ -32,7 +33,7 @@ final class IsValidAuthorValidator extends ConstraintValidator
         }
 
         // TODO: implement the validation here
-        if ($value !== $user) {
+        if ($value->id !== $user->getId()) {
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }

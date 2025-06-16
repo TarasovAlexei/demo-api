@@ -11,9 +11,11 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Entity\BlogPost;
+use App\Validator\IsValidAuthor;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use Symfony\Component\Validator\Constraints\NotBlank;
+
 
 
 #[ApiResource(
@@ -45,6 +47,7 @@ class BlogPostApi
     #[NotBlank]
     public ?string $content = null;
 
+    #[IsValidAuthor]
     public ?UserApi $author = null;
 
     public ?\DateTimeImmutable $createdAt = null;
