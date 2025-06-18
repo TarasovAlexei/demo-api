@@ -2,18 +2,13 @@
 
 namespace App\Validator;
 
-use App\Entity\BlogPost;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\BlogPostApi;
+use App\ApiResource\UserApi;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class PostsAllowedAuthorChangeValidator extends ConstraintValidator
 {
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
-    }
-
     public function validate($value, Constraint $constraint): void
     {
         assert($constraint instanceof PostsAllowedOwnerChange);
@@ -22,16 +17,13 @@ class PostsAllowedAuthorChangeValidator extends ConstraintValidator
             return;
         }
 
-        // meant to be used above a Collection field
-        assert($value instanceof Collection);
+        assert($value instanceof UserApi);
 
-        $unitOfWork = $this->entityManager->getUnitOfWork();
-        foreach ($value as $blogPost) {
-            assert($blogPost instanceof BlogPost);
+        foreach ($value->blogPosts as $blogPostApi) {
+            assert($blogPostApi instanceof BlogPostApi);
 
-            $originalData = $unitOfWork->getOriginalEntityData($blogPost);
-            $originalAuthorId = $originalData['author_id'];
-            $newAuthorId = $blogPost->getAuthor()->getId();
+            $originalAuthorId = $blogPostApi->author?->id;
+            $newAuthorId = $value->id;
 
             if (!$originalAuthorId || $originalAuthorId === $newAuthorId) {
                 return;

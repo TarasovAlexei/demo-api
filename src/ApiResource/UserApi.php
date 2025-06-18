@@ -14,6 +14,7 @@ use App\Entity\BlogPost;
 use App\Entity\User;
 use App\State\EntityToDtoStateProvider;
 use App\State\EntityClassDtoStateProcessor;
+use App\Validator\PostsAllowedAuthorChange;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
@@ -36,6 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     stateOptions: new Options(entityClass: User::class),
     security: 'is_granted("ROLE_USER")',
 )]
+#[PostsAllowedAuthorChange]
 class UserApi
 {   
     #[ApiProperty(readable: false, writable: false, identifier: true)]
