@@ -4,15 +4,21 @@ namespace App\Mapper;
 
 use App\ApiResource\BlogPostApi;
 use App\Entity\BlogPost;
+use App\Entity\User;
 use App\Repository\BlogPostRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
+use Symfonycasts\MicroMapper\MicroMapperInterface;
+
 
 #[AsMapper(from: BlogPostApi::class, to: BlogPost::class)]
 class BlogPostApiToEntityMapper implements MapperInterface
 {
     public function __construct(
         private BlogPostRepository $repository,
+        private Security $security,
+        private MicroMapperInterface $microMapper,
     )
     {
 
@@ -38,6 +44,14 @@ class BlogPostApiToEntityMapper implements MapperInterface
 
         assert($dto instanceof BlogPostApi);
         assert($entity instanceof BlogPost);
+
+        if ($dto->author) {
+            $entity->setAuthor($this->microMapper->map($dto->author, User::class, [
+                MicroMapperInterface::MAX_DEPTH => 0,
+            ]));
+        } else {
+            $entity->setAuthor($this->security->getUser());
+        }
 
         $entity->setContent($dto->content);
         $entity->setIsPublished($dto->isPublished);
