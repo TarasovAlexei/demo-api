@@ -12,6 +12,7 @@ use App\Repository\BlogPostRepository;
 use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BlogPostRepository::class)]
 #[ApiResource(
@@ -22,7 +23,14 @@ use Doctrine\ORM\Mapping as ORM;
         new Post(),
         new Patch(),
         new Delete(),
+    ],
+    normalizationContext: [
+        'groups' => ['post:read'],
+    ],
+    denormalizationContext: [
+        'groups' => ['post:write'],
     ]
+
 )]class BlogPost
 {
     #[ORM\Id]
@@ -31,16 +39,18 @@ use Doctrine\ORM\Mapping as ORM;
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['post:read', 'post:write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['post:read', 'post:write'])]
     private ?string $content = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
-    private ?bool $isPublished = null;
+    private ?bool $isPublished = false;
 
     public function __construct()
     {
@@ -81,6 +91,7 @@ use Doctrine\ORM\Mapping as ORM;
         return $this->createdAt;
     }
 
+    #[Groups(['post:read'])]
     public function getCreatedAtAgo(): string
     {
         return Carbon::instance($this->createdAt)->diffForHumans();
