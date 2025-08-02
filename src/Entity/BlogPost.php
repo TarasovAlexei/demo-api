@@ -29,7 +29,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     denormalizationContext: [
         'groups' => ['post:write'],
-    ]
+    ],
+    paginationItemsPerPage: 10
 
 )]class BlogPost
 {
