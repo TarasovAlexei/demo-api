@@ -16,6 +16,8 @@ use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: BlogPostRepository::class)]
 #[ApiResource(
@@ -51,11 +53,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
     #[ORM\Column(length: 255)]
     #[Groups(['post:read', 'post:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, minMessage: 'No more than 2 characters')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['post:read', 'post:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
+    #[Assert\NotBlank]
     private ?string $content = null;
 
     #[ORM\Column]
