@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -43,10 +44,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
     #[ORM\Column(length: 255)]
     #[Groups(['post:read', 'post:write'])]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['post:read', 'post:write'])]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $content = null;
 
     #[ORM\Column]
