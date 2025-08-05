@@ -47,7 +47,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         'csv' => 'text/csv',
     ],
 
-)]class BlogPost
+)]
+class BlogPost
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -78,6 +79,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['post:read', 'post:write'])]
     #[Assert\Valid]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?User $author = null;
 
     public function __construct()
