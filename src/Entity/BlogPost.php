@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -47,6 +48,20 @@ use Symfony\Component\Validator\Constraints as Assert;
         'csv' => 'text/csv',
     ],
 
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/posts.{_format}',
+    shortName: 'Post',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'user_id' => new Link(
+            fromProperty: 'blogPosts',
+            fromClass: User::class,
+        ),
+    ],
+    normalizationContext: [
+        'groups' => ['post:read'],
+    ],
 )]
 class BlogPost
 {
