@@ -63,7 +63,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     /**
      * @var Collection<int, BlogPost>
      */
-    #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author', cascade: ['persist'])]
+    #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author', cascade: ['persist'], orphanRemoval: true)]
     #[Groups(['user:read', 'user:write'])]
     #[Assert\Valid]
     private Collection $blogPosts;
