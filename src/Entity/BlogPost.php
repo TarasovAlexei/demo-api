@@ -77,6 +77,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     #[ORM\ManyToOne(inversedBy: 'blogPosts')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['post:read', 'post:write'])]
+    #[Assert\Valid]
     private ?User $author = null;
 
     public function __construct()

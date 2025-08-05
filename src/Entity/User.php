@@ -45,12 +45,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write', 'post:item:get'])]
+    #[Groups(['user:read', 'user:write', 'post:item:get', 'post:write'])]
     #[Assert\NotBlank]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write', 'post:item:get'])]
+    #[Groups(['user:read', 'user:write', 'post:item:get', 'post:write'])]
     #[Assert\NotBlank]
     private ?string $lastName = null;
 
