@@ -46,12 +46,12 @@ use Symfony\Component\Validator\Constraints as Assert;
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'post:item:get'])]
     #[Assert\NotBlank]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'post:item:get'])]
     #[Assert\NotBlank]
     private ?string $lastName = null;
 
