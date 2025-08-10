@@ -13,8 +13,13 @@ final class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login', methods: ['POST'])]
     public function login(#[CurrentUser] $user = null): Response
     {
+        if (!$user) {
+            return $this->json([
+                'error' => 'Invalid login request',
+            ], 401);
+        }
         return $this->json([
-            'user' => $user ? $user->getId() : null,
+            'user' => $user->getId(),
         ]);
     }
 

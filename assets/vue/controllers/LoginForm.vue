@@ -7,6 +7,9 @@
                     <h2 class="text-[#1e2328] text-xl mb-6">Demo-API</h2>
                 </div>
                 <div class="p-8 rounded-2xl bg-white shadow">
+                    <div v-if="error" class="mt-3 p-3 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400">
+                        {{ error }}
+                    </div>
                     <form v-on:submit.prevent="handleSubmit" class="mt-8 space-y-4">
                     <div>
                         <label class="text-gray-800 text-sm mb-2 block" for="email">Email</label>
@@ -60,6 +63,7 @@ import { ref } from 'vue';
 
 const email = ref('');
 const password = ref('');
+const error = ref('');
 const isLoading = ref(false);
 
 const loadEmailField = () => {
@@ -71,6 +75,7 @@ const loadPasswordField = () => {
 
 const handleSubmit = async () => {
     isLoading.value = true;
+    error.value = '';
 
     const response = await fetch('/login', {
         method: 'POST',
@@ -84,6 +89,13 @@ const handleSubmit = async () => {
     });
 
     isLoading.value = false;
+
+    if (!response.ok) {
+        const data = await response.json();
+        error.value = data.error;
+
+        return;
+    }
 
     email.value = '';
     password.value = '';
