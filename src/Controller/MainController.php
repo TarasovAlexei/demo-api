@@ -2,17 +2,22 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 final class MainController extends AbstractController
 {
     #[Route('/', name: 'app_main')]
-    public function index(): Response
+    public function index(NormalizerInterface $normalizer, #[CurrentUser] User $user = null): Response
     {
         return $this->render('main/homepage.html.twig', [
-            'controller_name' => 'MainController',
+            'userData' => $normalizer->normalize($user, 'jsonld', [
+                'groups' => ['user:read'],
+            ]),
         ]);
     }
 }

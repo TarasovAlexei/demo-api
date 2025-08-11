@@ -3,5 +3,7 @@
 {% block title %}Форма входа{% endblock %}
 
 {% block body %}
-    <div {{ vue_component('LoginForm') }}></div>
+    <div {{ vue_component('LoginForm', {
+        user: userData,
+    }) }}></div>
 {% endblock %}
