@@ -30,8 +30,12 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
         ),
         new GetCollection(),
-        new Post(),
-        new Patch(),
+        new Post(
+            security: 'is_granted("ROLE_POST_CREATE")',
+        ),
+        new Patch(
+            security: 'is_granted("ROLE_POST_EDIT")',
+        ),
         new Delete(),
     ],
     normalizationContext: [
