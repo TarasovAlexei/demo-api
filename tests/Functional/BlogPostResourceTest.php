@@ -54,7 +54,7 @@ class BlogPostResourceTest extends ApiTestCase
         ;
     }
 
-     public function testToCreatePostDeniedWithoutScope(): void
+    public function testToCreatePostDeniedWithoutScope(): void
     {
         $token = ApiTokenFactory::createOne([
             'scopes' => [ApiToken::SCOPE_POST_EDIT]
@@ -66,6 +66,49 @@ class BlogPostResourceTest extends ApiTestCase
                 'headers' => [
                     'Authorization' => 'Bearer '.$token->getToken()
                 ]
+            ])
+            ->assertStatus(403)
+        ;
+    }
+
+    public function testToUpdatePost()
+    {
+        $user = UserFactory::createOne();
+        $post = BlogPostFactory::createOne(['author' => $user]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    'title' => '12345',
+                ],
+            ])
+            ->assertStatus(200)
+            ->assertJsonMatches('title', '12345')
+        ;
+
+
+        $user2 = UserFactory::createOne();
+
+        $this->browser()
+            ->actingAs($user2)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    'title' => '6789',
+                    // be tricky and try to change the author
+                    'author' => '/api/users/'.$user2->getId(),
+                ],
+            ])
+            ->assertStatus(403)
+        ;
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    // change the owner to someone else
+                    'author' => '/api/users/'.$user2->getId(),
+                ],
             ])
             ->assertStatus(403)
         ;
