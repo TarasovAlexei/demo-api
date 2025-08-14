@@ -113,4 +113,26 @@ class BlogPostResourceTest extends ApiTestCase
             ->assertStatus(403)
         ;
     }
+
+    public function testAuthorCanSeeIsPublishedField(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $post = BlogPostFactory::createOne([
+            'isPublished' => false,
+            'author' => $user,
+        ]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    'title' => 'Title',
+                ],
+            ])
+            ->assertStatus(200)
+            ->assertJsonMatches('title', 'Title')
+            ->assertJsonMatches('isPublished', false)
+        ;
+    }
 }
