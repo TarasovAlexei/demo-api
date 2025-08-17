@@ -19,6 +19,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\IsValidAuthor;
+
 
 
 #[ORM\Entity(repositoryClass: BlogPostRepository::class)]
@@ -36,7 +38,6 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Patch(
             security: 'is_granted("EDIT", object)',
-            securityPostDenormalize: 'is_granted("EDIT", object)',
         ),
         new Delete(),
     ],
@@ -100,7 +101,9 @@ class BlogPost
     #[ORM\ManyToOne(inversedBy: 'blogPosts')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['post:read', 'post:write'])]
+    #[Assert\NotNull]
     #[Assert\Valid]
+    #[IsValidAuthor]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?User $author = null;
 
