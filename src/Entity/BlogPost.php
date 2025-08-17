@@ -94,8 +94,7 @@ class BlogPost
 
     #[ORM\Column]
     #[ApiFilter(BooleanFilter::class)]
-    #[Groups(['post:read', 'post:write'])]
-    #[ApiProperty(security: 'is_granted("EDIT", object)')]
+    #[Groups(['author:read'])]
     private ?bool $isPublished = false;
 
     #[ORM\ManyToOne(inversedBy: 'blogPosts')]
