@@ -101,7 +101,6 @@ class BlogPost
     #[ORM\ManyToOne(inversedBy: 'blogPosts')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['post:read', 'post:write'])]
-    #[Assert\NotNull]
     #[Assert\Valid]
     #[IsValidAuthor]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
