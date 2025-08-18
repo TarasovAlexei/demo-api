@@ -109,7 +109,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, BlogPost>
      */
     #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author', cascade: ['persist'], orphanRemoval: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:write'])]
     #[Assert\Valid]
     #[PostsAllowedAuthorChange]
     private Collection $blogPosts;
@@ -255,6 +255,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getBlogPosts(): Collection
     {
         return $this->blogPosts;
+    }
+
+    #[Groups(['user:read'])]
+    #[SerializedName('blogPosts')]
+    public function getPublishedBlogPosts(): Collection
+    {
+        return $this->blogPosts->filter(static function (BlogPost $post) {
+            return $post->getIsPublished();
+        });
     }
 
     public function addBlogPost(BlogPost $blogPost): static
