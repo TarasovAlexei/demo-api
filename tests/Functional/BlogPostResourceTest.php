@@ -136,4 +136,14 @@ class BlogPostResourceTest extends ApiTestCase
             ->assertJsonMatches('isMine', true)
         ;
     }
+
+    public function testOneUnpublishedPost404s(): void
+    {
+        $blogPost = BlogPostFactory::createOne([
+            'isPublished' => false,
+        ]);
+        $this->browser()
+            ->get('/api/posts/'.$blogPost->getId())
+            ->assertStatus(404);
+    }
 }
