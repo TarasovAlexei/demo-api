@@ -21,6 +21,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\State\BlogPostStateProvider;
+use App\State\BlogPostStateProcessor;
 use App\Validator\IsValidAuthor;
 
 
@@ -38,9 +39,11 @@ use App\Validator\IsValidAuthor;
         new GetCollection(),
         new Post(
             security: 'is_granted("ROLE_POST_CREATE")',
+            processor: BlogPostStateProcessor::class,
         ),
         new Patch(
             security: 'is_granted("EDIT", object)',
+            processor: BlogPostStateProcessor::class,
         ),
         new Delete(),
     ],
@@ -99,7 +102,7 @@ class BlogPost
 
     #[ORM\Column]
     #[ApiFilter(BooleanFilter::class)]
-    #[Groups(['author:read'])]
+    #[Groups(['author:read', 'post:write'])]
     private ?bool $isPublished = false;
 
     #[ORM\ManyToOne(inversedBy: 'blogPosts')]

@@ -166,4 +166,24 @@ class BlogPostResourceTest extends ApiTestCase
             ->assertJsonMatches('title', 'newTitle')
         ;
     }
+
+    public function testPublishPost(): void
+    {
+        $user = UserFactory::createOne();
+        $post = BlogPostFactory::createOne([
+            'author' => $user,
+            'isPublished' => false,
+        ]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    'isPublished' => true,
+                ],
+            ])
+            ->assertStatus(200)
+            ->assertJsonMatches('isPublished', true)
+        ;
+    }
 }
