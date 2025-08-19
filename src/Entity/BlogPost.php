@@ -106,6 +106,11 @@ class BlogPost
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?User $author = null;
 
+    /**
+     * @var bool Non-persisted property to help determine if the post is owned by the authenticated user
+     */
+    private bool $isAuthorByAuthenticatedUser;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -173,5 +178,21 @@ class BlogPost
         $this->author = $author;
 
         return $this;
+    }
+
+    #[Groups(['post:read'])]
+    #[SerializedName('isMine')]
+    public function isAuthorByAuthenticatedUser(): bool
+    {   
+        if (!isset($this->isAuthorByAuthenticatedUser)) {
+            throw new \LogicException('You must call setIsAuthorByAuthenticatedUser() before isAuthorByAuthenticatedUser()');
+        }
+
+        return $this->isAuthorByAuthenticatedUser;
+    }
+
+    public function setIsAuthorByAuthenticatedUser(bool $isAuthorByAuthenticatedUser)
+    {
+        $this->isAuthorByAuthenticatedUser = $isAuthorByAuthenticatedUser;
     }
 }
