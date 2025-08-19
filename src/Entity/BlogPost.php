@@ -17,9 +17,12 @@ use App\Repository\BlogPostRepository;
 use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\State\BlogPostStateProvider;
 use App\Validator\IsValidAuthor;
+
 
 
 
@@ -48,6 +51,7 @@ use App\Validator\IsValidAuthor;
         'groups' => ['post:write'],
     ],
     paginationItemsPerPage: 10,
+    provider: BlogPostStateProvider::class,
     formats: [
         'jsonld',
         'json',
