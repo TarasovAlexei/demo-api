@@ -4,6 +4,7 @@ namespace App\Tests\Functional;
 
 use App\Factory\UserFactory;
 use App\Factory\BlogPostFactory;
+use Zenstruck\Browser\Json;
 use Zenstruck\Foundry\Test\ResetDatabase;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -26,6 +27,10 @@ class UserResourceTest extends ApiTestCase
                 ]
             ])
             ->assertStatus(201)
+            ->use(function (Json $json) {
+                $json->assertMissing('password');
+                $json->assertMissing('id');
+            })
             ->post('/login', [
                 'json' => [
                     'email' => 'email@email.com',
