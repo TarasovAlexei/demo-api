@@ -322,6 +322,9 @@
             "webpack.config.js"
         ]
     },
+    "symfonycasts/micro-mapper": {
+        "version": "v0.2.1"
+    },
     "symfonycasts/tailwind-bundle": {
         "version": "0.11",
         "recipe": {
