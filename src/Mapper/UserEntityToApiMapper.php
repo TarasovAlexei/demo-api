@@ -4,12 +4,22 @@ namespace App\Mapper;
 
 use App\ApiResource\UserApi;
 use App\Entity\User;
+use App\ApiResource\BlogPostApi;
+use App\Entity\BlogPost;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
+use Symfonycasts\MicroMapper\MicroMapperInterface;
+
 
 #[AsMapper(from: User::class, to: UserApi::class)]
 class UserEntityToApiMapper implements MapperInterface
-{
+{   
+    public function __construct(
+        private MicroMapperInterface $microMapper,
+    )
+    {
+    }
+
     public function load(object $from, string $toClass, array $context): object
     {
         $entity = $from;
@@ -32,7 +42,9 @@ class UserEntityToApiMapper implements MapperInterface
         $dto->firstName = $entity->getFirstName();
         $dto->lastName = $entity->getLastName();
         $dto->username = $entity->getUsername();
-        $dto->blogPosts = $entity->getPublishedBlogPosts()->getValues();
+        $dto->blogPosts = array_map(function(BlogPost $blogPost) {
+            return $this->microMapper->map($blogPost, BlogPostApi::class);
+        }, $entity->getPublishedBlogPosts()->getValues());
 
         return $dto;
     }
