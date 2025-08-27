@@ -43,7 +43,9 @@ class UserEntityToApiMapper implements MapperInterface
         $dto->lastName = $entity->getLastName();
         $dto->username = $entity->getUsername();
         $dto->blogPosts = array_map(function(BlogPost $blogPost) {
-            return $this->microMapper->map($blogPost, BlogPostApi::class);
+            return $this->microMapper->map($blogPost, BlogPostApi::class, [
+                MicroMapperInterface::MAX_DEPTH => 0,
+            ]);
         }, $entity->getPublishedBlogPosts()->getValues());
 
         return $dto;
