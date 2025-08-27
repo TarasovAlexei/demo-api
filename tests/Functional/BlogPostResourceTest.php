@@ -18,7 +18,7 @@ class BlogPostResourceTest extends ApiTestCase
     use ResetDatabase;
     use Factories;
 
-    public function testToCreatePost(): void
+    public function testToCreatePostWithLogin(): void
     {
         $user = UserFactory::createOne();
 
