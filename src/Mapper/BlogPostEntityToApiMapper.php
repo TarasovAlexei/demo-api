@@ -40,6 +40,7 @@ class BlogPostEntityToApiMapper implements MapperInterface
 
         $dto->title = $entity->getTitle();
         $dto->content = $entity->getContent();
+        $dto->isPublished = $entity->getIsPublished();
         $dto->author = $this->microMapper->map($entity->getAuthor(), UserApi::class, [
             MicroMapperInterface::MAX_DEPTH => 0,
         ]);

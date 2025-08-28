@@ -48,6 +48,9 @@ class BlogPostApi
     #[NotBlank]
     public ?string $content = null;
 
+    #[ApiProperty(security: 'object === null or is_granted("EDIT", object)')]
+    public bool $isPublished = false;
+
     public ?string $createdAt = null;
 
     public ?bool $isMine = null;
