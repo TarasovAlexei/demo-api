@@ -3,6 +3,8 @@
 namespace App\Security\Voter;
 
 use App\Entity\BlogPost;
+use App\Entity\User;
+use App\ApiResource\BlogPostApi;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -19,7 +21,7 @@ class BlogPostVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::EDIT])
-            && $subject instanceof BlogPost;
+            && $subject instanceof BlogPostApi;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -30,7 +32,7 @@ class BlogPostVoter extends Voter
             return false;
         }
 
-        assert($subject instanceof BlogPost);
+        assert($subject instanceof BlogPostApi);
 
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
@@ -39,7 +41,7 @@ class BlogPostVoter extends Voter
                     return false;
                 }
 
-                if ($subject->getAuthor() === $user) {
+                if ($subject->author?->id === $user->getId()) {
                     return true;
                 }
 
