@@ -83,6 +83,7 @@ class BlogPostResourceTest extends ApiTestCase
                 'json' => [
                     'title' => '12345',
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(200)
             ->assertJsonMatches('title', '12345')
@@ -99,6 +100,7 @@ class BlogPostResourceTest extends ApiTestCase
                     // be tricky and try to change the author
                     'author' => '/api/users/'.$user2->getId(),
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(403)
         ;
@@ -110,6 +112,7 @@ class BlogPostResourceTest extends ApiTestCase
                     // change the owner to someone else
                     'author' => '/api/users/'.$user2->getId(),
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(422)
         ;
@@ -130,6 +133,7 @@ class BlogPostResourceTest extends ApiTestCase
                 'json' => [
                     'title' => 'Title',
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(200)
             ->assertJsonMatches('title', 'Title')
@@ -162,6 +166,7 @@ class BlogPostResourceTest extends ApiTestCase
                 'json' => [
                     'title' => 'newTitle',
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(200)
             ->assertJsonMatches('title', 'newTitle')
@@ -182,6 +187,7 @@ class BlogPostResourceTest extends ApiTestCase
                 'json' => [
                     'isPublished' => true,
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(200)
             ->assertJsonMatches('isPublished', true)
