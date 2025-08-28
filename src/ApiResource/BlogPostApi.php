@@ -13,7 +13,9 @@ use ApiPlatform\Metadata\Post;
 use App\Entity\BlogPost;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
+use App\Validator\IsValidAuthor;
 use Symfony\Component\Validator\Constraints\NotBlank;
+
 
 #[ApiResource(
     shortName: 'Post',
@@ -50,5 +52,6 @@ class BlogPostApi
 
     public ?bool $isMine = null;
 
+    #[IsValidAuthor]
     public ?UserApi $author = null;
 }
