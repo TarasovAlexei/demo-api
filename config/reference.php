@@ -1573,6 +1573,164 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *     generate_final_classes?: bool, // Default: true
  *     generate_final_entities?: bool, // Default: false
  * }
+ * @psalm-type WebProfilerConfig = array{
+ *     toolbar?: bool|array{ // Profiler toolbar configuration
+ *         enabled?: bool, // Default: false
+ *         ajax_replace?: bool, // Replace toolbar on AJAX requests // Default: false
+ *     },
+ *     intercept_redirects?: bool, // Default: false
+ *     excluded_ajax_paths?: scalar|null, // Default: "^/((index|app(_[\\w]+)?)\\.php/)?_wdt"
+ * }
+ * @psalm-type MonologConfig = array{
+ *     use_microseconds?: scalar|null, // Default: true
+ *     channels?: list<scalar|null>,
+ *     handlers?: array<string, array{ // Default: []
+ *         type: scalar|null,
+ *         id?: scalar|null,
+ *         enabled?: bool, // Default: true
+ *         priority?: scalar|null, // Default: 0
+ *         level?: scalar|null, // Default: "DEBUG"
+ *         bubble?: bool, // Default: true
+ *         interactive_only?: bool, // Default: false
+ *         app_name?: scalar|null, // Default: null
+ *         include_stacktraces?: bool, // Default: false
+ *         process_psr_3_messages?: array{
+ *             enabled?: bool|null, // Default: null
+ *             date_format?: scalar|null,
+ *             remove_used_context_fields?: bool,
+ *         },
+ *         path?: scalar|null, // Default: "%kernel.logs_dir%/%kernel.environment%.log"
+ *         file_permission?: scalar|null, // Default: null
+ *         use_locking?: bool, // Default: false
+ *         filename_format?: scalar|null, // Default: "{filename}-{date}"
+ *         date_format?: scalar|null, // Default: "Y-m-d"
+ *         ident?: scalar|null, // Default: false
+ *         logopts?: scalar|null, // Default: 1
+ *         facility?: scalar|null, // Default: "user"
+ *         max_files?: scalar|null, // Default: 0
+ *         action_level?: scalar|null, // Default: "WARNING"
+ *         activation_strategy?: scalar|null, // Default: null
+ *         stop_buffering?: bool, // Default: true
+ *         passthru_level?: scalar|null, // Default: null
+ *         excluded_http_codes?: list<array{ // Default: []
+ *             code?: scalar|null,
+ *             urls?: list<scalar|null>,
+ *         }>,
+ *         accepted_levels?: list<scalar|null>,
+ *         min_level?: scalar|null, // Default: "DEBUG"
+ *         max_level?: scalar|null, // Default: "EMERGENCY"
+ *         buffer_size?: scalar|null, // Default: 0
+ *         flush_on_overflow?: bool, // Default: false
+ *         handler?: scalar|null,
+ *         url?: scalar|null,
+ *         exchange?: scalar|null,
+ *         exchange_name?: scalar|null, // Default: "log"
+ *         channel?: scalar|null, // Default: null
+ *         bot_name?: scalar|null, // Default: "Monolog"
+ *         use_attachment?: scalar|null, // Default: true
+ *         use_short_attachment?: scalar|null, // Default: false
+ *         include_extra?: scalar|null, // Default: false
+ *         icon_emoji?: scalar|null, // Default: null
+ *         webhook_url?: scalar|null,
+ *         exclude_fields?: list<scalar|null>,
+ *         token?: scalar|null,
+ *         region?: scalar|null,
+ *         source?: scalar|null,
+ *         use_ssl?: bool, // Default: true
+ *         user?: mixed,
+ *         title?: scalar|null, // Default: null
+ *         host?: scalar|null, // Default: null
+ *         port?: scalar|null, // Default: 514
+ *         config?: list<scalar|null>,
+ *         members?: list<scalar|null>,
+ *         connection_string?: scalar|null,
+ *         timeout?: scalar|null,
+ *         time?: scalar|null, // Default: 60
+ *         deduplication_level?: scalar|null, // Default: 400
+ *         store?: scalar|null, // Default: null
+ *         connection_timeout?: scalar|null,
+ *         persistent?: bool,
+ *         message_type?: scalar|null, // Default: 0
+ *         parse_mode?: scalar|null, // Default: null
+ *         disable_webpage_preview?: bool|null, // Default: null
+ *         disable_notification?: bool|null, // Default: null
+ *         split_long_messages?: bool, // Default: false
+ *         delay_between_messages?: bool, // Default: false
+ *         topic?: int, // Default: null
+ *         factor?: int, // Default: 1
+ *         tags?: list<scalar|null>,
+ *         console_formatter_options?: mixed, // Default: []
+ *         formatter?: scalar|null,
+ *         nested?: bool, // Default: false
+ *         publisher?: string|array{
+ *             id?: scalar|null,
+ *             hostname?: scalar|null,
+ *             port?: scalar|null, // Default: 12201
+ *             chunk_size?: scalar|null, // Default: 1420
+ *             encoder?: "json"|"compressed_json",
+ *         },
+ *         mongodb?: string|array{
+ *             id?: scalar|null, // ID of a MongoDB\Client service
+ *             uri?: scalar|null,
+ *             username?: scalar|null,
+ *             password?: scalar|null,
+ *             database?: scalar|null, // Default: "monolog"
+ *             collection?: scalar|null, // Default: "logs"
+ *         },
+ *         elasticsearch?: string|array{
+ *             id?: scalar|null,
+ *             hosts?: list<scalar|null>,
+ *             host?: scalar|null,
+ *             port?: scalar|null, // Default: 9200
+ *             transport?: scalar|null, // Default: "Http"
+ *             user?: scalar|null, // Default: null
+ *             password?: scalar|null, // Default: null
+ *         },
+ *         index?: scalar|null, // Default: "monolog"
+ *         document_type?: scalar|null, // Default: "logs"
+ *         ignore_error?: scalar|null, // Default: false
+ *         redis?: string|array{
+ *             id?: scalar|null,
+ *             host?: scalar|null,
+ *             password?: scalar|null, // Default: null
+ *             port?: scalar|null, // Default: 6379
+ *             database?: scalar|null, // Default: 0
+ *             key_name?: scalar|null, // Default: "monolog_redis"
+ *         },
+ *         predis?: string|array{
+ *             id?: scalar|null,
+ *             host?: scalar|null,
+ *         },
+ *         from_email?: scalar|null,
+ *         to_email?: list<scalar|null>,
+ *         subject?: scalar|null,
+ *         content_type?: scalar|null, // Default: null
+ *         headers?: list<scalar|null>,
+ *         mailer?: scalar|null, // Default: null
+ *         email_prototype?: string|array{
+ *             id: scalar|null,
+ *             method?: scalar|null, // Default: null
+ *         },
+ *         verbosity_levels?: array{
+ *             VERBOSITY_QUIET?: scalar|null, // Default: "ERROR"
+ *             VERBOSITY_NORMAL?: scalar|null, // Default: "WARNING"
+ *             VERBOSITY_VERBOSE?: scalar|null, // Default: "NOTICE"
+ *             VERBOSITY_VERY_VERBOSE?: scalar|null, // Default: "INFO"
+ *             VERBOSITY_DEBUG?: scalar|null, // Default: "DEBUG"
+ *         },
+ *         channels?: string|array{
+ *             type?: scalar|null,
+ *             elements?: list<scalar|null>,
+ *         },
+ *     }>,
+ * }
+ * @psalm-type DebugConfig = array{
+ *     max_items?: int, // Max number of displayed items past the first level, -1 means no limit. // Default: 2500
+ *     min_depth?: int, // Minimum tree depth to clone all the items, 1 is default. // Default: 1
+ *     max_string_length?: int, // Max length of displayed strings, -1 means no limit. // Default: -1
+ *     dump_destination?: scalar|null, // A stream URL where dumps should be written to. // Default: null
+ *     theme?: "dark"|"light", // Changes the color of the dump() output when rendered directly on the templating. "dark" (default) or "light". // Default: "dark"
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1584,6 +1742,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *     doctrine_migrations?: DoctrineMigrationsConfig,
  *     nelmio_cors?: NelmioCorsConfig,
  *     api_platform?: ApiPlatformConfig,
+ *     monolog?: MonologConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1596,6 +1755,9 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         nelmio_cors?: NelmioCorsConfig,
  *         api_platform?: ApiPlatformConfig,
  *         maker?: MakerConfig,
+ *         web_profiler?: WebProfilerConfig,
+ *         monolog?: MonologConfig,
+ *         debug?: DebugConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1608,6 +1770,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         doctrine_migrations?: DoctrineMigrationsConfig,
  *         nelmio_cors?: NelmioCorsConfig,
  *         api_platform?: ApiPlatformConfig,
+ *         monolog?: MonologConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1620,6 +1783,8 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         doctrine_migrations?: DoctrineMigrationsConfig,
  *         nelmio_cors?: NelmioCorsConfig,
  *         api_platform?: ApiPlatformConfig,
+ *         web_profiler?: WebProfilerConfig,
+ *         monolog?: MonologConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
