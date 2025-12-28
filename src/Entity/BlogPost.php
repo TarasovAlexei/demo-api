@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Delete;
 use App\Repository\BlogPostRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BlogPostRepository::class)]
 #[ApiResource(
@@ -22,6 +23,12 @@ use Doctrine\ORM\Mapping as ORM;
         new Patch(),
         new Delete(),
     ],
+    normalizationContext: [
+        'groups' => ['post:read'],
+    ],
+    denormalizationContext: [
+        'groups' => ['post:write'],
+    ],
     paginationItemsPerPage: 10
 )]
 class BlogPost
@@ -32,9 +39,11 @@ class BlogPost
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['post:read', 'post:write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['post:read', 'post:write'])]
     private ?string $content = null;
 
     #[ORM\Column]
