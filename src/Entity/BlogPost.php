@@ -21,7 +21,8 @@ use Doctrine\ORM\Mapping as ORM;
         new Post(),
         new Patch(),
         new Delete(),
-    ]
+    ],
+    paginationItemsPerPage: 10
 )]
 class BlogPost
 {
