@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
 use App\Repository\BlogPostRepository;
+use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -89,6 +90,12 @@ class BlogPost
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    #[Groups(['post:read'])]
+    public function getCreatedAtAgo(): string
+    {
+        return Carbon::instance($this->createdAt)->diffForHumans();
     }
 
     public function getIsPublished(): ?bool
