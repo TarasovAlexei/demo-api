@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -51,7 +53,8 @@ class BlogPost
     private ?\DateTimeImmutable $createdAt;
 
     #[ORM\Column]
-    private ?bool $isPublished = null;
+    #[ApiFilter(BooleanFilter::class)]
+    private ?bool $isPublished = false;
 
     public function __construct()
     {
