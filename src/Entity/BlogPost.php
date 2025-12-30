@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
@@ -43,10 +44,12 @@ class BlogPost
 
     #[ORM\Column(length: 50)]
     #[Groups(['post:read', 'post:write'])]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['post:read', 'post:write'])]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $content = null;
 
     #[ORM\Column]
