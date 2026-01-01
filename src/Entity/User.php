@@ -59,8 +59,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, BlogPost>
      */
-    #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author')]
+    #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author', cascade: ['persist'])]
     #[Groups(['user:read', 'user:write'])]
+    #[Assert\Valid]
     private Collection $blogPosts;
 
     public function __construct()

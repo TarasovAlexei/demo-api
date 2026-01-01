@@ -54,14 +54,14 @@ class BlogPost
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['post:read', 'post:write', 'user:read'])]
+    #[Groups(['post:read', 'post:write', 'user:read', 'user:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 50, maxMessage: 'No more than 50 characters')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['post:read', 'post:write', 'user:read'])]
+    #[Groups(['post:read', 'post:write', 'user:read', 'user:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[Assert\NotBlank]
     private ?string $content = null;
