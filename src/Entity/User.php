@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Link;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,6 +21,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']],
+)]
+#[ApiResource(
+    uriTemplate: '/posts/{post_id}/author.{_format}',
+    operations: [new Get()],
+    uriVariables: [
+        'post_id' => new Link(
+            fromProperty: 'author',
+            fromClass: BlogPost::class,
+        ),
+    ],
+    normalizationContext: ['groups' => ['user:read']],
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {

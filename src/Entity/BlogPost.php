@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Link;
 use App\Repository\BlogPostRepository;
 use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
@@ -44,6 +45,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
         'json',
         'html',
         'csv' => 'text/csv',
+    ],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/posts.{_format}',
+    shortName: 'Post',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'user_id' => new Link(
+            fromProperty: 'blogPosts',
+            fromClass: User::class,
+        ),
+    ],
+    normalizationContext: [
+        'groups' => ['post:read'],
     ],
 )]
 class BlogPost
