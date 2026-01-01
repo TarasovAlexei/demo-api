@@ -47,12 +47,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'post:item:get'])]
     #[Assert\NotBlank]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'post:item:get'])]
     #[Assert\NotBlank]
     private ?string $lastName = null;
 
@@ -60,7 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, BlogPost>
      */
     #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author')]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $blogPosts;
 
     public function __construct()
