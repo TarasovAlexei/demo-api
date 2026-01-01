@@ -69,6 +69,11 @@ class BlogPost
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $isPublished = false;
 
+    #[ORM\ManyToOne(inversedBy: 'blogPosts')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['post:read', 'post:write'])]
+    private ?User $author = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -122,6 +127,18 @@ class BlogPost
     public function setIsPublished(bool $isPublished): static
     {
         $this->isPublished = $isPublished;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): static
+    {
+        $this->author = $author;
 
         return $this;
     }
