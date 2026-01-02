@@ -1774,6 +1774,16 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         default_namespace?: scalar|null, // Default namespace where stories will be created by maker. // Default: "Story"
  *     },
  * }
+ * @psalm-type WebpackEncoreConfig = array{
+ *     output_path: scalar|null, // The path where Encore is building the assets - i.e. Encore.setOutputPath()
+ *     crossorigin?: false|"anonymous"|"use-credentials", // crossorigin value when Encore.enableIntegrityHashes() is used, can be false (default), anonymous or use-credentials // Default: false
+ *     preload?: bool, // preload all rendered script and link tags automatically via the http2 Link header. // Default: false
+ *     cache?: bool, // Enable caching of the entry point file(s) // Default: false
+ *     strict_mode?: bool, // Throw an exception if the entrypoints.json file is missing or an entry is missing from the data // Default: true
+ *     builds?: array<string, scalar|null>,
+ *     script_attributes?: array<string, scalar|null>,
+ *     link_attributes?: array<string, scalar|null>,
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1786,6 +1796,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *     nelmio_cors?: NelmioCorsConfig,
  *     api_platform?: ApiPlatformConfig,
  *     monolog?: MonologConfig,
+ *     webpack_encore?: WebpackEncoreConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1802,6 +1813,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         monolog?: MonologConfig,
  *         debug?: DebugConfig,
  *         zenstruck_foundry?: ZenstruckFoundryConfig,
+ *         webpack_encore?: WebpackEncoreConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1815,6 +1827,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         nelmio_cors?: NelmioCorsConfig,
  *         api_platform?: ApiPlatformConfig,
  *         monolog?: MonologConfig,
+ *         webpack_encore?: WebpackEncoreConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1830,6 +1843,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         web_profiler?: WebProfilerConfig,
  *         monolog?: MonologConfig,
  *         zenstruck_foundry?: ZenstruckFoundryConfig,
+ *         webpack_encore?: WebpackEncoreConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
