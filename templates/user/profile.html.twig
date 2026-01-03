@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User{% endblock %}
+
+{% block body %}
+    <div {{ vue_component('UserProfile', {
+        tokens: app.user ? app.user.validTokenStrings : null 
+    }) }}></div>
+{% endblock %}
