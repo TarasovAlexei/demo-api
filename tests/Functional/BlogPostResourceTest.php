@@ -2,6 +2,8 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\ApiToken;
+use App\Factory\ApiTokenFactory;
 use App\Factory\BlogPostFactory;
 use App\Factory\UserFactory;
 use Zenstruck\Browser\HttpOptions;
@@ -42,6 +44,40 @@ class BlogPostResourceTest extends ApiTestCase
                 ]))
             ->assertStatus(201)
             ->assertJsonMatches('title', 'The title')
+        ;
+    }
+
+    public function testToCreatePostWithApiKey(): void
+    {
+        $token = ApiTokenFactory::createOne([
+            'scopes' => [ApiToken::SCOPE_POST_CREATE]
+        ]);
+
+        $this->browser()
+            ->post('/api/posts', [
+                'json' => [],
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getToken()
+                ]
+            ])
+            ->assertStatus(422)
+        ;
+    }
+
+    public function testToCreatePostDeniedWithoutScope(): void
+    {
+        $token = ApiTokenFactory::createOne([
+            'scopes' => [ApiToken::SCOPE_POST_EDIT]
+        ]);
+
+        $this->browser()
+            ->post('/api/posts', [
+                'json' => [],
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getToken()
+                ]
+            ])
+            ->assertStatus(403)
         ;
     }
 }
