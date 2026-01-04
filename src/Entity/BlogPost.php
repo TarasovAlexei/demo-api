@@ -29,9 +29,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ],
         ),
         new GetCollection(),
-        new Post(),
-        new Patch(),
-        new Delete(),
+        new Post(
+            security: 'is_granted("ROLE_POST_CREATE")',
+        ),
+        new Patch(
+            security: 'is_granted("ROLE_POST_EDIT")',
+        ),
+        new Delete(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
     ],
     normalizationContext: [
         'groups' => ['post:read'],
