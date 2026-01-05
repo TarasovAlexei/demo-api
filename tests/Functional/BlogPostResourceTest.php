@@ -80,4 +80,47 @@ class BlogPostResourceTest extends ApiTestCase
             ->assertStatus(403)
         ;
     }
+
+    public function testToUpdatePost()
+    {
+        $user = UserFactory::createOne();
+        $post = BlogPostFactory::createOne(['author' => $user]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    'title' => 'The title',
+                ],
+            ])
+            ->assertStatus(200)
+            ->assertJsonMatches('title', 'The title')
+        ;
+        
+
+        $user2 = UserFactory::createOne();
+
+        $this->browser()
+            ->actingAs($user2)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    'title' => 'The title',
+                    // be tricky and try to change the author
+                    'author' => '/api/users/'.$user2->getId(),
+                ],
+            ])
+            ->assertStatus(403)
+        ;
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    // change the author to someone else
+                    'author' => '/api/users/'.$user2->getId(),
+                ],
+            ])
+            ->assertStatus(403)
+        ;
+    }
 }

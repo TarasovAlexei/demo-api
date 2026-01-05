@@ -33,7 +33,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: 'is_granted("ROLE_POST_CREATE")',
         ),
         new Patch(
-            security: 'is_granted("ROLE_POST_EDIT")',
+            security: 'is_granted("EDIT", object)',
+            securityPostDenormalize: 'is_granted("EDIT", object)',
         ),
         new Delete(
             security: 'is_granted("ROLE_ADMIN")',
