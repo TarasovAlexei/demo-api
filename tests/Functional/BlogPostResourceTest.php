@@ -124,7 +124,7 @@ class BlogPostResourceTest extends ApiTestCase
         ;
     }
 
-    public function testAuthorCanSeeIsPublishedField(): void
+    public function testAuthorCanSeeIsPublishedAndIsMineFields(): void
     {
         $user = UserFactory::new()->create();
         $post = BlogPostFactory::createOne([
@@ -142,6 +142,7 @@ class BlogPostResourceTest extends ApiTestCase
             ->assertStatus(200)
             ->assertJsonMatches('title', 'The title')
             ->assertJsonMatches('isPublished', false)
+            ->assertJsonMatches('isMine', true)
         ;
     }
 }
