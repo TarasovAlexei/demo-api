@@ -94,7 +94,7 @@ class BlogPost
 
     #[ORM\Column]
     #[ApiFilter(BooleanFilter::class)]
-    #[Groups(['post:read', 'post:write'])]
+    #[Groups(['author:read'])]
     #[ApiProperty(security: 'is_granted("EDIT", object)')]
     private ?bool $isPublished = false;
 
