@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\IsValidAuthor;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BlogPostRepository::class)]
@@ -35,7 +36,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
         new Patch(
             security: 'is_granted("EDIT", object)',
-            securityPostDenormalize: 'is_granted("EDIT", object)',
         ),
         new Delete(
             security: 'is_granted("ROLE_ADMIN")',
@@ -101,6 +101,9 @@ class BlogPost
     #[ORM\ManyToOne(inversedBy: 'blogPosts')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['post:read', 'post:write'])]
+    #[Assert\Valid]
+    #[IsValidAuthor]
+    #[Assert\NotNull]
     private ?User $author = null;
 
     public function __construct()
