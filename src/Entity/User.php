@@ -29,6 +29,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
         new GetCollection(),
         new Post(
             security: 'is_granted("PUBLIC_ACCESS")',
+            validationContext: ['groups' => ['Default', 'postValidation']],
         ),
         new Patch(
             security: 'is_granted("ROLE_USER_EDIT")'
@@ -81,6 +82,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Groups(['user:write'])]
     #[SerializedName('password')]
+    #[Assert\NotBlank(groups: ['postValidation'])]
     private ?string $plainPassword = null;
 
     #[ORM\Column(length: 255)]
