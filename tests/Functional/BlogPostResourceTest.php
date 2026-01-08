@@ -32,6 +32,17 @@ class BlogPostResourceTest extends ApiTestCase
         ;
     }
 
+    public function testGetOneUnpublishedPost404s(): void
+    {
+        $blogPost = BlogPostFactory::createOne([
+            'isPublished' => false,
+        ]);
+
+        $this->browser()
+            ->get('/api/posts/'.$blogPost->getId())
+            ->assertStatus(404);
+    }
+
     public function testToCreatePost(): void
     {
         $user = UserFactory::createOne();
