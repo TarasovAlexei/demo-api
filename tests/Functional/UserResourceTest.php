@@ -67,5 +67,19 @@ class UserResourceTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testUnpublishedPostsNotReturned(): void
+    {
+        $user = UserFactory::createOne();
+        BlogPostFactory::createOne([
+            'isPublished' => false,
+            'author' => $user,
+        ]);
+
+        $this->browser()
+            ->actingAs(UserFactory::createOne())
+            ->get('/api/users/' . $user->getId())
+            ->assertJsonMatches('length("blogPosts")', 0);
+    }
+
 
 }
