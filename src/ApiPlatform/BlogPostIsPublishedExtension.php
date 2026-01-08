@@ -8,9 +8,14 @@ use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\BlogPost;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class BlogPostIsPublishedExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
-{
+{   
+    public function __construct(private Security $security)
+    {
+    }
+
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
     {
         $this->addIsPublishedWhere($resourceClass, $queryBuilder);
@@ -33,7 +38,15 @@ class BlogPostIsPublishedExtension implements QueryCollectionExtensionInterface,
         }
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
-        $queryBuilder->andWhere(sprintf('%s.isPublished = :isPublished', $rootAlias))
-            ->setParameter('isPublished', true);
+        $user = $this->security->getUser(); 
+
+        if ($user) {
+            $queryBuilder->andWhere(sprintf('%s.isPublished = :isPublished OR %s.author = :author', $rootAlias, $rootAlias))
+                ->setParameter('author', $user);
+        } else {
+            $queryBuilder->andWhere(sprintf('%s.isPublished = :isPublished', $rootAlias));
+        }
+
+        $queryBuilder->setParameter('isPublished', true);
     }
 }

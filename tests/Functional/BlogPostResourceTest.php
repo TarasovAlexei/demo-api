@@ -139,11 +139,31 @@ class BlogPostResourceTest extends ApiTestCase
         ;
     }
 
+    public function testUnpublishedWorks()
+    {
+        $user = UserFactory::createOne();
+        $post = BlogPostFactory::createOne([
+            'author' => $user,
+            'isPublished' => false,
+        ]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/posts/'.$post->getId(), [
+                'json' => [
+                    'title' => 'The title',
+                ],
+            ])
+            ->assertStatus(200)
+            ->assertJsonMatches('title', 'The title')
+        ;
+    }
+
     public function testAuthorCanSeeIsPublishedAndIsMineFields(): void
     {
         $user = UserFactory::new()->create();
         $post = BlogPostFactory::createOne([
-            'isPublished' => false,
+            'isPublished' => true,
             'author' => $user,
         ]);
 
@@ -156,7 +176,7 @@ class BlogPostResourceTest extends ApiTestCase
             ])
             ->assertStatus(200)
             ->assertJsonMatches('title', 'The title')
-            ->assertJsonMatches('isPublished', false)
+            ->assertJsonMatches('isPublished', true)
             ->assertJsonMatches('isMine', true)
         ;
     }
