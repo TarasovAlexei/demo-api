@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Link;
 use App\Repository\UserRepository;
+use App\Validator\PostsAllowedAuthorChange;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -101,6 +102,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: BlogPost::class, mappedBy: 'author', cascade: ['persist'])]
     #[Groups(['user:read', 'user:write'])]
     #[Assert\Valid]
+    #[PostsAllowedAuthorChange]
     private Collection $blogPosts;
 
     /**
