@@ -17,7 +17,12 @@ class BlogPostResourceTest extends ApiTestCase
 
     public function testGetCollectionOfPosts(): void
     {
-        BlogPostFactory::createMany(5);
+        BlogPostFactory::createMany(5, [
+            'isPublished' => true,
+        ]);
+        BlogPostFactory::createOne([
+            'isPublished' => false,
+        ]);
 
         $this->browser()
             ->get('/api/posts')
