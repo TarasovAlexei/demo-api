@@ -103,7 +103,6 @@ class BlogPost
     #[Groups(['post:read', 'post:write'])]
     #[Assert\Valid]
     #[IsValidAuthor]
-    #[Assert\NotNull]
     private ?User $author = null;
 
     public function __construct()

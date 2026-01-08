@@ -40,7 +40,6 @@ class BlogPostResourceTest extends ApiTestCase
             ->post('/api/posts', HttpOptions::json([
                     'title' => 'The title',
                     'content' => 'The content',
-                    'author' => '/api/users/'.$user->getId(),
                 ]))
             ->assertStatus(201)
             ->assertJsonMatches('title', 'The title')
