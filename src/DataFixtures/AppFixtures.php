@@ -21,6 +21,7 @@ class AppFixtures extends Fixture
         BlogPostFactory::createMany(40, function () {
             return [
                 'author' => UserFactory::random(),
+                'isPublished' => rand(0, 10) > 3,
             ];
         });
 
