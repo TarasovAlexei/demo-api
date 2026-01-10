@@ -22,13 +22,7 @@ class AddAuthorGroupsNormalizer implements NormalizerInterface, SerializerAwareI
             $context['groups'][] = 'author:read';
         }
 
-        $normalized = $this->normalizer->normalize($object, $format, $context);
-
-        if ($object instanceof BlogPost && $this->security->getUser() === $object->getAuthor()) {
-            $normalized['isMine'] = true;
-        }
-
-        return $normalized;
+        return $this->normalizer->normalize($object, $format, $context);
     }
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool

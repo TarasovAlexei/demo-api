@@ -19,7 +19,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\IsValidAuthor;
+use App\State\BlogPostStateProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: BlogPostRepository::class)]
 #[ApiResource(
@@ -48,6 +50,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         'groups' => ['post:write'],
     ],
     paginationItemsPerPage: 10,
+    provider: BlogPostStateProvider::class,
     formats: [
         'jsonld',
         'json',
@@ -104,6 +107,12 @@ class BlogPost
     #[Assert\Valid]
     #[IsValidAuthor]
     private ?User $author = null;
+
+    /**
+     * @var bool Non-persisted property to help determine if the post is author by the authenticated user
+     */
+    #[Groups(['post:read'])] // Чтобы поле попало в JSON-ответ
+    private bool $isAuthorByAuthenticatedUser = false; // Сразу дайте дефолтное значение    
 
     public function __construct()
     {
@@ -172,5 +181,20 @@ class BlogPost
         $this->author = $author;
 
         return $this;
+    }
+
+    #[Groups(['post:read'])]
+    #[SerializedName('isMine')]
+    public function isAuthorByAuthenticatedUser(): bool
+    {
+        if (!isset($this->isAuthorByAuthenticatedUser)) {
+            throw new \LogicException('You must call setIsAuthorByAuthenticatedUser() before isAuthorByAuthenticatedUser()');
+        }
+        return $this->isAuthorByAuthenticatedUser;
+    }
+    
+    public function setIsAuthorByAuthenticatedUser(bool $isAuthorByAuthenticatedUser): void
+    {
+        $this->isAuthorByAuthenticatedUser = $isAuthorByAuthenticatedUser;
     }
 }
