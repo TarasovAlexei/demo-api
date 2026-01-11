@@ -7,11 +7,13 @@ use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\BlogPost;
+use App\State\EntityToDtoStateProvider;
 use App\Entity\User;
 
 #[ApiResource(
     shortName: 'User',
     paginationItemsPerPage: 5,
+    provider: EntityToDtoStateProvider::class,
     stateOptions: new Options(entityClass: User::class),
 )]
 #[ApiFilter(SearchFilter::class, properties: [
