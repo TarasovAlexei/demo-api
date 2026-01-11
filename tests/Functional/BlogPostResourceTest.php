@@ -5,6 +5,7 @@ namespace App\Tests\Functional;
 use App\Entity\ApiToken;
 use App\Factory\ApiTokenFactory;
 use App\Factory\BlogPostFactory;
+use App\Factory\NotificationFactory;
 use App\Factory\UserFactory;
 use Zenstruck\Browser\HttpOptions;
 use Zenstruck\Browser\Json;
@@ -199,5 +200,7 @@ class BlogPostResourceTest extends ApiTestCase
             ->assertStatus(200)
             ->assertJsonMatches('isPublished', true)
         ;
+
+        NotificationFactory::repository()->assert()->count(1);
     }
 }
