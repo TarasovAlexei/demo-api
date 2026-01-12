@@ -4,34 +4,36 @@ namespace App\State;
 
 use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 use ApiPlatform\Doctrine\Common\State\RemoveProcessor;
+use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\DeleteOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\ApiResource\UserApi;
-use App\Entity\User;
-use App\Repository\UserRepository;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfonycasts\MicroMapper\MicroMapperInterface;
 
 class EntityClassDtoStateProcessor implements ProcessorInterface
 {
     public function __construct(
-        private UserRepository $userRepository,
         #[Autowire(service: PersistProcessor::class)] private ProcessorInterface $persistProcessor,
         #[Autowire(service: RemoveProcessor::class)] private ProcessorInterface $removeProcessor,
-        private UserPasswordHasherInterface $passwordHasher,
-    )
-    {
-
+        private MicroMapperInterface $microMapper
+    ) {
     }
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
-        if (!$data instanceof UserApi) {
-            return null;
+        $stateOptions = $operation->getStateOptions();
+        
+        if (!$stateOptions instanceof Options) {
+            throw new \LogicException('State options must be an instance of ApiPlatform\Doctrine\Orm\State\Options');
         }
 
-        $entity = $this->mapDtoToEntity($data);
+        $entityClass = $stateOptions->getEntityClass();
+        if (!$entityClass) {
+            throw new \LogicException('Entity class must be defined in state options.');
+        }
+
+        $entity = $this->mapDtoToEntity($data, $entityClass);
 
         if ($operation instanceof DeleteOperationInterface) {
             $this->removeProcessor->process($entity, $operation, $uriVariables, $context);
@@ -46,22 +48,8 @@ class EntityClassDtoStateProcessor implements ProcessorInterface
         return $data;
     }
 
-    private function mapDtoToEntity(UserApi $dto): User
+    private function mapDtoToEntity(object $dto, string $entityClass): object
     {
-        $entity = $dto->id 
-            ? ($this->userRepository->find($dto->id) ?? throw new NotFoundHttpException("User #{$dto->id} not found"))
-            : new User();
-
-        $entity->setEmail($dto->email);
-        $entity->setFirstName($dto->firstName);
-        $entity->setLastName($dto->lastName);
-
-        if ($dto->password) {
-            $entity->setPassword(
-                $this->passwordHasher->hashPassword($entity, $dto->password)
-            );
-        }
-
-        return $entity;
+        return $this->microMapper->map($dto, $entityClass);
     }
 }
