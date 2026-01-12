@@ -7,6 +7,7 @@ use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\BlogPost;
+use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use App\Entity\User;
 
@@ -14,6 +15,7 @@ use App\Entity\User;
     shortName: 'User',
     paginationItemsPerPage: 5,
     provider: EntityToDtoStateProvider::class,
+    processor: EntityClassDtoStateProcessor::class,
     stateOptions: new Options(entityClass: User::class),
 )]
 #[ApiFilter(SearchFilter::class, properties: [
@@ -28,6 +30,8 @@ class UserApi
     public ?string $firstName = null;
 
     public ?string $lastName = null;
+
+    public ?string $password = null;
 
     /**
      * @var array<int, BlogPost>
