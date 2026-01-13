@@ -2,13 +2,14 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\BlogPost;
+use App\ApiResource\BlogPostApi;
+use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class BlogPostVoter extends Voter
+class BlogPostApiVoter extends Voter
 {
     public const EDIT = 'EDIT';
 
@@ -19,18 +20,16 @@ class BlogPostVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::EDIT])
-            && $subject instanceof BlogPost;
+            && $subject instanceof BlogPostApi;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
         // if the user is anonymous, do not grant access
-        if (!$user instanceof UserInterface) {
+        if (!$user instanceof User) {
             return false;
         }
-
-        assert($subject instanceof BlogPost);
 
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
@@ -39,7 +38,7 @@ class BlogPostVoter extends Voter
                     return false;
                 }
 
-                if ($subject->getAuthor() === $user) {
+                if ($subject->author?->id === $user->getId()) {
                     return true;
                 }
 

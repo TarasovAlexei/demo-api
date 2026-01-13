@@ -2,6 +2,7 @@
 
 namespace App\Validator;
 
+use App\ApiResource\UserApi;
 use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -13,8 +14,7 @@ final class IsValidAuthorValidator extends ConstraintValidator
 {
     public function __construct(
         private readonly Security $security 
-    ) {
-    }
+    ) {}
 
     public function validate(mixed $value, Constraint $constraint): void
     {
@@ -26,21 +26,23 @@ final class IsValidAuthorValidator extends ConstraintValidator
             return;
         }
 
-        if (!$value instanceof User) {
-            throw new UnexpectedTypeException($value, User::class);
+        if (!$value instanceof UserApi) {
+            throw new UnexpectedTypeException($value, UserApi::class);
         }
 
         $currentUser = $this->security->getUser();
 
-        if (!$currentUser instanceof UserInterface) {
-            throw new \LogicException('IsValidAuthorValidator requires an authenticated user.');
+        if (!$currentUser instanceof User) {
+            $this->context->buildViolation('You must be authenticated.')
+                ->addViolation();
+            return;
         }
 
-
-        if ($value !== $currentUser) {
+        if ($value->id !== $currentUser->getId()) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ user }}', $value->getUserIdentifier())
+                ->setParameter('{{ user }}', $value->id) 
                 ->addViolation();
         }
     }
 }
+

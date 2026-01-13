@@ -108,6 +108,7 @@ class BlogPostResourceTest extends ApiTestCase
                 'json' => [
                     'title' => 'The title',
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(200)
             ->assertJsonMatches('title', 'The title')
@@ -124,6 +125,7 @@ class BlogPostResourceTest extends ApiTestCase
                     // be tricky and try to change the author
                     'author' => '/api/users/'.$user2->getId(),
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(403)
         ;
@@ -135,6 +137,7 @@ class BlogPostResourceTest extends ApiTestCase
                     // change the author to someone else
                     'author' => '/api/users/'.$user2->getId(),
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']      
             ])
             ->assertStatus(422)
         ;
@@ -154,6 +157,7 @@ class BlogPostResourceTest extends ApiTestCase
                 'json' => [
                     'title' => 'The title',
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(200)
             ->assertJsonMatches('title', 'The title')
@@ -174,6 +178,7 @@ class BlogPostResourceTest extends ApiTestCase
                 'json' => [
                     'title' => 'The title',
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(200)
             ->assertJsonMatches('title', 'The title')
@@ -196,6 +201,7 @@ class BlogPostResourceTest extends ApiTestCase
                 'json' => [
                     'isPublished' => true,
                 ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(200)
             ->assertJsonMatches('isPublished', true)
