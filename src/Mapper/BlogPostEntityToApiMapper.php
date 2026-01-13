@@ -9,6 +9,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
+use InvalidArgumentException;
 
 #[AsMapper(from: BlogPost::class, to: BlogPostApi::class)]
 class BlogPostEntityToApiMapper implements MapperInterface
@@ -22,28 +23,34 @@ class BlogPostEntityToApiMapper implements MapperInterface
 
     public function load(object $from, string $toClass, array $context): object
     {
-        $entity = $from;
-        assert($entity instanceof BlogPost);
+        if (!$from instanceof BlogPost) {
+            throw new InvalidArgumentException('Source object must be an instance of BlogPost');
+        }
 
         $dto = new BlogPostApi();
-        $dto->id = $entity->getId();
+        $dto->id = $from->getId();
 
         return $dto;
     }
 
     public function populate(object $from, object $to, array $context): object
     {
-        $entity = $from;
-        $dto = $to;
-        assert($entity instanceof BlogPost);
-        assert($dto instanceof BlogPostApi);
+        if (!$from instanceof BlogPost) {
+            throw new InvalidArgumentException('Source object must be an instance of BlogPost');
+        }
 
-        $dto->title = $entity->getTitle();
-        $dto->content = $entity->getContent();
-        $dto->author = $this->microMapper->map($entity->getAuthor(), UserApi::class);
-        $dto->createdAtAgo = $entity->getCreatedAtAgo();
-        $dto->isMine = $this->security->getUser() && $this->security->getUser() === $entity->getAuthor();
+        if (!$to instanceof BlogPostApi) {
+            throw new InvalidArgumentException('Target object must be an instance of BlogPostApi');
+        }
 
-        return $dto;
+        $to->title = $from->getTitle();
+        $to->content = $from->getContent();
+        $to->author = $this->microMapper->map($from->getAuthor(), UserApi::class, [
+            MicroMapperInterface::MAX_DEPTH => 0,
+        ]);
+        $to->createdAtAgo = $from->getCreatedAtAgo();
+        $to->isMine = $this->security->getUser() && $this->security->getUser() === $from->getAuthor();
+
+        return $to;
     }
 }
