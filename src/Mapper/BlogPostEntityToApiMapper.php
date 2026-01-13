@@ -49,6 +49,7 @@ class BlogPostEntityToApiMapper implements MapperInterface
             MicroMapperInterface::MAX_DEPTH => 0,
         ]);
         $to->createdAtAgo = $from->getCreatedAtAgo();
+        $to->isPublished = $from->getIsPublished();
         $to->isMine = $this->security->getUser() && $this->security->getUser() === $from->getAuthor();
 
         return $to;

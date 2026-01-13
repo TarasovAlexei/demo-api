@@ -51,4 +51,7 @@ class BlogPostApi
 
     #[IsValidAuthor]
     public ?UserApi $author = null;
+
+    #[ApiProperty(security: 'object === null or is_granted("EDIT", object)')]
+    public bool $isPublished = false;
 }

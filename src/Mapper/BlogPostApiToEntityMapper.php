@@ -54,6 +54,7 @@ class BlogPostApiToEntityMapper implements MapperInterface
 
         $entity->setTitle($dto->title);
         $entity->setContent($dto->content);
+        $entity->setIsPublished($dto->isPublished);
 
         return $entity;
     }
