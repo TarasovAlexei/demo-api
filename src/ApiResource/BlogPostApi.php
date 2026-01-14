@@ -11,7 +11,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
 use App\Entity\BlogPost;
-use App\State\EntityClassDtoStateProcessor;
+use App\State\BlogPostStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use App\Validator\IsValidAuthor;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -31,7 +31,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
     ],
     paginationItemsPerPage: 10,
     provider: EntityToDtoStateProvider::class,
-    processor: EntityClassDtoStateProcessor::class,
+    processor: BlogPostStateProcessor::class,
     stateOptions: new Options(entityClass: BlogPost::class),
 )]
 class BlogPostApi
