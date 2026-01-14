@@ -52,6 +52,31 @@ class UserResourceTest extends ApiTestCase
             ->assertStatus(200);;
     }
 
+    public function testPostsCanBeRemoved(): void
+    {
+        $user = UserFactory::createOne();
+        $otherUser = UserFactory::createOne();
+
+        $blogPost = BlogPostFactory::createOne(['author' => $user]);
+        BlogPostFactory::createOne(['author' => $user]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/users/' . $user->getId(), [
+                'json' => [
+                    'blogPosts' => [
+                        '/api/posts/' . $blogPost->getId(),
+                    ],
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
+            ])
+            ->assertStatus(200)
+            ->get('/api/users/' . $user->getId())
+            ->assertJsonMatches('length("blogPosts")', 1)
+            ->assertJsonMatches('blogPosts[0]', '/api/posts/' . $blogPost->getId())
+        ;
+    }
+
     public function testPostsCannotBeStolen(): void
     {
         $user = UserFactory::createOne();

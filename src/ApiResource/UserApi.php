@@ -63,6 +63,5 @@ class UserApi
     /**
      * @var array<int, BlogPostApi>
      */
-    #[ApiProperty(writable: false)]
     public array $blogPosts = [];
 }

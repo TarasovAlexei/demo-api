@@ -3,12 +3,15 @@
 namespace App\Mapper;
 
 use App\ApiResource\UserApi;
+use App\Entity\BlogPost;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
+use Symfonycasts\MicroMapper\MicroMapperInterface;
 
 #[AsMapper(from: UserApi::class, to: User::class)]
 final readonly class UserApiToEntityMapper implements MapperInterface
@@ -16,6 +19,8 @@ final readonly class UserApiToEntityMapper implements MapperInterface
     public function __construct(
         private UserRepository $userRepository,
         private UserPasswordHasherInterface $userPasswordHasher,
+        private MicroMapperInterface $microMapper,
+        private PropertyAccessorInterface $propertyAccessor,
     ) {
     }
 
@@ -48,6 +53,14 @@ final readonly class UserApiToEntityMapper implements MapperInterface
                 $this->userPasswordHasher->hashPassword($to, $from->password)
             );
         }
+
+        $blogPostEntities = [];
+        foreach ($from->blogPosts as $blogPostApi) {
+            $blogPostEntities[] = $this->microMapper->map($blogPostApi, BlogPost::class, [
+                MicroMapperInterface::MAX_DEPTH => 0,
+            ]);
+        }
+        $this->propertyAccessor->setValue($to, 'blogPosts', $blogPostEntities);
 
         return $to;
     }
