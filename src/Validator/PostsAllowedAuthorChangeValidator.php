@@ -2,52 +2,43 @@
 
 namespace App\Validator;
 
-use App\Entity\BlogPost;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManagerInterface;
+use App\ApiResource\BlogPostApi;
+use App\ApiResource\UserApi;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class PostsAllowedAuthorChangeValidator extends ConstraintValidator
 {
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
-    }
-
     public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof PostsAllowedAuthorChange) {
-            throw new \InvalidArgumentException(sprintf('Expected type PostsAllowedAuthorChange, received %s', get_debug_type($constraint)));
+            throw new UnexpectedTypeException($constraint, PostsAllowedAuthorChange::class);
         }
-        if (null === $value || '' === $value) {
+
+        if (null === $value || !$value instanceof UserApi) {
             return;
         }
 
-        // meant to be used above a Collection field
-        if (!$value instanceof Collection) {
-            throw new \TypeError(sprintf('Expected Collection, received %s', get_debug_type($value)));
-        }
-        $unitOfWork = $this->entityManager->getUnitOfWork();
+        $newAuthorId = $value->id;
 
-        foreach ($value as $blogPost) {
+        foreach ($value->blogPosts as $blogPostApi) {
+            if (!$blogPostApi instanceof BlogPostApi) {
+                continue; 
+            }
+            
+            $originalAuthorId = $blogPostApi->author?->id;
 
-            if (!$blogPost instanceof BlogPost) {
+            if (null === $originalAuthorId) {
                 continue; 
             }
 
-            if (!$unitOfWork->isInIdentityMap($blogPost)) {
-                continue;
-            }
-
-            $originalData = $unitOfWork->getOriginalEntityData($blogPost);
-            
-            $originalAuthor = $originalData['author'] ?? null;
-            $currentAuthor = $blogPost->getAuthor();
-
-            if ($originalAuthor !== null && $originalAuthor !== $currentAuthor) {
+            if ($originalAuthorId !== $newAuthorId) {
                 $this->context->buildViolation($constraint->message)
-                    ->atPath('[' . $value->indexOf($blogPost) . ']')
+                    ->atPath('blogPosts') 
                     ->addViolation();
+                    
+                return; 
             }
         }
     }

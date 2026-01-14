@@ -4,7 +4,7 @@ namespace App\Validator;
 
 use Symfony\Component\Validator\Constraint;
 
-#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
 final class PostsAllowedAuthorChange extends Constraint
 {
     
@@ -20,5 +20,10 @@ final class PostsAllowedAuthorChange extends Constraint
         $this->mode = $options['mode'] ?? $mode;
 
         parent::__construct($options, $groups, $payload);
+    }
+
+    public function getTargets(): string|array
+    {
+        return self::CLASS_CONSTRAINT;
     }
 }

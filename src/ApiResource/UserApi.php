@@ -16,6 +16,7 @@ use App\Entity\BlogPost;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use App\Entity\User;
+use App\Validator\PostsAllowedAuthorChange;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
@@ -41,6 +42,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiFilter(SearchFilter::class, properties: [
     'lastName' => 'partial',
 ])]
+#[PostsAllowedAuthorChange]
 class UserApi
 {   
     #[ApiProperty(readable: false, writable: false, identifier: true)]
