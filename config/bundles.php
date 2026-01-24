@@ -19,4 +19,5 @@ return [
     Symfony\UX\Vue\VueBundle::class => ['all' => true],
     Symfonycasts\TailwindBundle\SymfonycastsTailwindBundle::class => ['all' => true],
     Symfonycasts\MicroMapper\SymfonycastsMicroMapperBundle::class => ['all' => true],
+    Vich\UploaderBundle\VichUploaderBundle::class => ['all' => true],
 ];
