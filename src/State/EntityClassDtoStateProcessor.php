@@ -16,40 +16,31 @@ class EntityClassDtoStateProcessor implements ProcessorInterface
     public function __construct(
         #[Autowire(service: PersistProcessor::class)] private ProcessorInterface $persistProcessor,
         #[Autowire(service: RemoveProcessor::class)] private ProcessorInterface $removeProcessor,
-        private MicroMapperInterface $microMapper
+        private MicroMapperInterface $microMapper,
     ) {
     }
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
+        if (null === $data && $operation->getClass()) {
+            $dtoClass = $operation->getClass();
+            $data = new $dtoClass();
+        }
+
         $stateOptions = $operation->getStateOptions();
-        
-        if (!$stateOptions instanceof Options) {
-            throw new \LogicException('State options must be an instance of ApiPlatform\Doctrine\Orm\State\Options');
+        if (!$stateOptions instanceof Options || !$stateOptions->getEntityClass()) {
+            throw new \LogicException(sprintf('Entity class must be defined in "stateOptions" for operation "%s".', $operation->getName()));
         }
 
-        $entityClass = $stateOptions->getEntityClass();
-        if (!$entityClass) {
-            throw new \LogicException('Entity class must be defined in state options.');
-        }
-
-        $entity = $this->mapDtoToEntity($data, $entityClass);
+        $entity = $this->microMapper->map($data, $stateOptions->getEntityClass(), $context);
 
         if ($operation instanceof DeleteOperationInterface) {
             $this->removeProcessor->process($entity, $operation, $uriVariables, $context);
-
             return null;
         }
 
         $this->persistProcessor->process($entity, $operation, $uriVariables, $context);
-        
-        $data->id = $entity->getId();
 
-        return $data;
-    }
-
-    private function mapDtoToEntity(object $dto, string $entityClass): object
-    {
-        return $this->microMapper->map($dto, $entityClass);
+        return $this->microMapper->map($entity, $operation->getClass(), $context);
     }
 }

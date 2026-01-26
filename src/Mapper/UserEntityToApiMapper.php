@@ -4,58 +4,49 @@ namespace App\Mapper;
 
 use App\ApiResource\BlogPostApi;
 use App\ApiResource\UserApi;
-use App\Entity\User;
 use App\Entity\BlogPost;
+use App\Entity\User;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
-use InvalidArgumentException;
 
 #[AsMapper(from: User::class, to: UserApi::class)]
 class UserEntityToApiMapper implements MapperInterface
-{   
+{
     public function __construct(
         private MicroMapperInterface $microMapper,
-    )
-    {
+    ) {
     }
 
     public function load(object $from, string $toClass, array $context): object
     {
-        $entity = $from;
-        
         if (!$from instanceof User) {
             throw new \InvalidArgumentException('Expected instance of User');
         }
 
         $dto = new UserApi();
-        $dto->id = $entity->getId();
+        $dto->id = $from->getId();
 
         return $dto;
     }
 
     public function populate(object $from, object $to, array $context): object
     {
-        $entity = $from;
-        $dto = $to;
-
-        if (!$from instanceof User) {
-            throw new \InvalidArgumentException(sprintf('Source must be "%s", "%s" given.', User::class, $from::class));
+        if (!$from instanceof User || !$to instanceof UserApi) {
+            throw new \InvalidArgumentException('Unexpected types for mapping');
         }
 
-        if (!$to instanceof UserApi) {
-            throw new \InvalidArgumentException(sprintf('Target must be "%s", "%s" given.', UserApi::class, $to::class));
-        }
+        $to->email = $from->getEmail();
+        $to->firstName = $from->getFirstName();
+        $to->lastName = $from->getLastName();
 
-        $dto->email = $entity->getEmail();
-        $dto->firstName = $entity->getFirstName();
-        $dto->lastName = $entity->getLastName();
-        $dto->blogPosts = array_map(function(BlogPost $blogPost) {
+        $to->blogPosts = array_map(function (BlogPost $blogPost) use ($context) {
             return $this->microMapper->map($blogPost, BlogPostApi::class, [
                 MicroMapperInterface::MAX_DEPTH => 0,
+                ...$context
             ]);
-        }, $entity->getPublishedBlogPosts()->toArray());
+        }, $from->getPublishedBlogPosts()->toArray());
 
-        return $dto;
+        return $to;
     }
 }

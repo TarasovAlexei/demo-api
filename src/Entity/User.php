@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\MediaObject;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -220,4 +221,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->plainPassword;
     }
+
 }

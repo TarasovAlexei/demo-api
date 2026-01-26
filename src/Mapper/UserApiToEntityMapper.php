@@ -40,6 +40,7 @@ final readonly class UserApiToEntityMapper implements MapperInterface
 
     public function populate(object $from, object $to, array $context): User
     {
+        
         if (!$from instanceof UserApi || !$to instanceof User) {
             throw new \InvalidArgumentException('Invalid source or target object type');
         }

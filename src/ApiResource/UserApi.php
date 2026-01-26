@@ -12,7 +12,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiProperty;
-use App\Entity\BlogPost;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use App\Entity\User;
@@ -45,7 +44,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[PostsAllowedAuthorChange]
 class UserApi
 {   
-    #[ApiProperty(readable: false, writable: false, identifier: true)]
+    #[ApiProperty(identifier: true, readable: true, writable: false)]
     public ?int $id = null;
 
     #[Assert\NotBlank]
@@ -58,9 +57,11 @@ class UserApi
     #[Assert\NotBlank]
     public ?string $lastName = null;
 
-    #[ApiProperty(readable: false)]
+    #[ApiProperty(readable: false, writable: true)]
     #[Assert\NotBlank(groups: ['postValidation'])]
     public ?string $password = null;
+
+    public ?string $avatar = null;
 
     /**
      * @var array<int, BlogPostApi>
