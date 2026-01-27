@@ -27,6 +27,7 @@ security:
                 check_path: app_login
                 username_path: email
                 password_path: password
+                success_handler: App\Security\LoginSuccessHandler
             logout:
                 path: app_logout
             access_token:
