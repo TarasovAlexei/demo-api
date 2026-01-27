@@ -2,6 +2,8 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
@@ -34,9 +36,10 @@ use Symfony\Component\Validator\Constraints\NotBlank;
     processor: BlogPostStateProcessor::class,
     stateOptions: new Options(entityClass: BlogPost::class),
 )]
+#[ApiFilter(SearchFilter::class, properties: ['author' => 'exact'])]
 class BlogPostApi
 {
-    #[ApiProperty(readable: false, writable: false, identifier: true)]
+    #[ApiProperty(readable: true, writable: false, identifier: true)]
     public ?int $id = null;
 
     #[NotBlank]
