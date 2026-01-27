@@ -39,6 +39,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
 
+    #[ORM\OneToOne(targetEntity: MediaObject::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?MediaObject $avatar = null;
+
     /**
      * @var Collection<int, BlogPost>
      */
@@ -221,5 +225,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->plainPassword;
     }
+    
+    public function getAvatar(): ?MediaObject
+    {
+        return $this->avatar;
+    }
 
+    public function setAvatar(?MediaObject $avatar): self
+    {
+        $this->avatar = $avatar;
+        return $this;
+    }
 }

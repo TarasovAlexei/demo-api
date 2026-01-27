@@ -61,7 +61,8 @@ class UserApi
     #[Assert\NotBlank(groups: ['postValidation'])]
     public ?string $password = null;
 
-    public ?string $avatar = null;
+    #[ApiProperty(writable: true)]
+    public mixed $avatar = null; 
 
     /**
      * @var array<int, BlogPostApi>

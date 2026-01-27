@@ -2,9 +2,11 @@
 
 namespace App\Mapper;
 
+use ApiPlatform\Metadata\IriConverterInterface;
 use App\ApiResource\UserApi;
 use App\Entity\BlogPost;
 use App\Entity\User;
+use App\Entity\MediaObject;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -21,6 +23,7 @@ final readonly class UserApiToEntityMapper implements MapperInterface
         private UserPasswordHasherInterface $userPasswordHasher,
         private MicroMapperInterface $microMapper,
         private PropertyAccessorInterface $propertyAccessor,
+        private IriConverterInterface $iriConverter,
     ) {
     }
 
@@ -39,8 +42,7 @@ final readonly class UserApiToEntityMapper implements MapperInterface
     }
 
     public function populate(object $from, object $to, array $context): User
-    {
-        
+    { 
         if (!$from instanceof UserApi || !$to instanceof User) {
             throw new \InvalidArgumentException('Invalid source or target object type');
         }
@@ -62,6 +64,51 @@ final readonly class UserApiToEntityMapper implements MapperInterface
             ]);
         }
         $this->propertyAccessor->setValue($to, 'blogPosts', $blogPostEntities);
+
+        if ($from->avatar) {
+            $iri = is_string($from->avatar) 
+                ? $from->avatar 
+                : ($from->avatar instanceof \App\ApiResource\MediaObjectApi ? "/api/media_objects/{$from->avatar->id}" : null);
+
+            if ($iri) {
+                try {
+                    $resource = $this->iriConverter->getResourceFromIri($iri);
+                    if ($resource instanceof MediaObject) {
+                        $to->setAvatar($resource);
+                    }
+                } catch (\Exception) {
+                }
+            }
+        } elseif (property_exists($from, 'avatar')) {
+            $to->setAvatar(null);
+        }
+
+    $currentFollowing = $to->getFollowing();
+    foreach ($currentFollowing as $alreadyFollowed) {
+        $to->removeFollowing($alreadyFollowed);
+    }
+
+    foreach ($from->following as $friendData) {
+        $friendEntity = null;
+
+        if (is_string($friendData)) {
+            try {
+                $resource = $this->iriConverter->getResourceFromIri($friendData);
+                if ($resource instanceof User) {
+                    $friendEntity = $resource;
+                }
+            } catch (\Exception $e) {
+                continue;
+            }
+        } 
+        elseif ($friendData instanceof UserApi && $friendData->id) {
+            $friendEntity = $this->userRepository->find($friendData->id);
+        }
+
+        if ($friendEntity && $friendEntity !== $to) {
+            $to->addFollowing($friendEntity);
+        }
+    }
 
         return $to;
     }

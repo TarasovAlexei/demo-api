@@ -11,27 +11,6 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class MediaObjectFactory extends PersistentProxyObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
-    public function __construct()
-    {
-    }
-
-    #[\Override]
-    public static function class(): string
-    {
-        return MediaObject::class;
-    }
-
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
-     */
-    #[\Override]
     protected function defaults(): array|callable
     {
         return [
@@ -41,10 +20,10 @@ final class MediaObjectFactory extends PersistentProxyObjectFactory
 
     private static function createFakeImage(): UploadedFile
     {
-        $tempFile = tempnam(sys_get_temp_dir(), 'fixture_avatar');
+        $tempFile = tempnam(sys_get_temp_dir(), 'avatar');
         $image = imagecreatetruecolor(200, 200);
         
-        $color = imagecolorallocate($image, rand(0, 255), rand(0, 255), rand(0, 255));
+        $color = imagecolorallocate($image, rand(100, 255), rand(100, 255), rand(100, 255));
         imagefill($image, 0, 0, $color);
         
         imagejpeg($image, $tempFile);
@@ -52,17 +31,13 @@ final class MediaObjectFactory extends PersistentProxyObjectFactory
 
         return new UploadedFile(
             $tempFile,
-            'avatar_fixture.jpg',
+            uniqid('avatar_') . '.jpg', 
             'image/jpeg',
             null,
-            true
+            true 
         );
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
-    #[\Override]
     protected function initialize(): static
     {
         return $this
@@ -70,5 +45,10 @@ final class MediaObjectFactory extends PersistentProxyObjectFactory
                 $mediaObject->setFile(null);
             })
         ;
+    }
+
+    public static function class(): string
+    {
+        return MediaObject::class;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Mapper;
 
+use App\ApiResource\MediaObjectApi;
 use App\ApiResource\BlogPostApi;
 use App\ApiResource\UserApi;
 use App\Entity\BlogPost;
@@ -40,12 +41,22 @@ class UserEntityToApiMapper implements MapperInterface
         $to->firstName = $from->getFirstName();
         $to->lastName = $from->getLastName();
 
-        $to->blogPosts = array_map(function (BlogPost $blogPost) use ($context) {
+       $to->blogPosts = array_values(array_map(function (BlogPost $blogPost) use ($context) {
             return $this->microMapper->map($blogPost, BlogPostApi::class, [
-                MicroMapperInterface::MAX_DEPTH => 0,
-                ...$context
+            MicroMapperInterface::MAX_DEPTH => 0,
+            ...$context
             ]);
-        }, $from->getPublishedBlogPosts()->toArray());
+        }, $from->getPublishedBlogPosts()->toArray()));
+
+         if ($from->getAvatar()) {
+            $to->avatar = $this->microMapper->map(
+                $from->getAvatar(), 
+                MediaObjectApi::class, 
+                $context
+            );
+        } else {
+            $to->avatar = null;
+        }
 
         return $to;
     }
