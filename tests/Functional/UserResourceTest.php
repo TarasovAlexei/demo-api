@@ -114,5 +114,32 @@ class UserResourceTest extends ApiTestCase
             ->assertJsonMatches('length("blogPosts")', 0);
     }
 
+    public function testUserSubscriptionFlow(): void
+    {
+        $me = UserFactory::createOne();
+        $targetUser = UserFactory::createOne();
+
+        $this->browser()
+            ->actingAs($me)
+            ->post("/api/users/{$targetUser->getId()}/follow")
+            ->assertStatus(204)
+            
+            ->get("/api/users/{$me->getId()}")
+            ->assertJsonMatches('followingCount', 1)
+            
+            ->get("/api/users/{$targetUser->getId()}")
+            ->assertJsonMatches('followersCount', 1)
+
+            ->post("/api/users/{$me->getId()}/follow")
+            ->assertStatus(400)
+
+            ->post("/api/users/{$targetUser->getId()}/unfollow")
+            ->assertStatus(204)
+
+            ->get("/api/users/{$me->getId()}")
+            ->assertJsonMatches('followingCount', 0)
+        ;
+    }
+
 
 }

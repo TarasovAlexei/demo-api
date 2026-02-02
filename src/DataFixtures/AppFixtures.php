@@ -18,6 +18,20 @@ class AppFixtures extends Fixture
         ]);
 
         UserFactory::createMany(10);
+
+        $allUsers = $manager->getRepository(\App\Entity\User::class)->findAll();
+
+        foreach ($allUsers as $user) {
+            foreach ($allUsers as $friend) {
+                if ($user->getEmail() !== $friend->getEmail()) {
+                    $user->addFollowing($friend);
+                }
+            }
+            $manager->persist($user);
+        }
+
+        $manager->flush();
+
         BlogPostFactory::createMany(40, function () {
             return [
                 'author' => UserFactory::random(),

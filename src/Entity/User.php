@@ -55,10 +55,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: ApiToken::class, mappedBy: 'ownedBy')]
     private Collection $apiTokens;
 
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'followers', fetch: 'EXTRA_LAZY')]
+    #[ORM\JoinTable(name: 'subscriptions')]
+    private Collection $following;
+
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'following', fetch: 'EXTRA_LAZY')]
+    private Collection $followers;
+
     public function __construct()
     {
         $this->blogPosts = new ArrayCollection();
         $this->apiTokens = new ArrayCollection();
+        $this->following = new ArrayCollection();
+        $this->followers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -234,6 +249,51 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAvatar(?MediaObject $avatar): self
     {
         $this->avatar = $avatar;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getFollowing(): Collection
+    {
+        return $this->following;
+    }
+
+    public function addFollowing(self $following): static
+    {
+        if (!$this->following->contains($following)) {
+            $this->following->add($following);
+            $following->followers->add($this);
+        }
+        return $this;
+    }
+
+    public function removeFollowing(self $following): static
+    {
+        if ($this->following->removeElement($following)) {
+            $following->followers->removeElement($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getFollowers(): Collection
+    {
+        return $this->followers;
+    }
+
+    public function addFollower(self $follower): static
+    {
+        $follower->addFollowing($this);
+        return $this;
+    }
+
+    public function removeFollower(self $follower): static
+    {
+        $follower->removeFollowing($this);
         return $this;
     }
 }

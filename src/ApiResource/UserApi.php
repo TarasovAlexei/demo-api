@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiProperty;
+use App\State\UserSubscriptionProcessor;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use App\Entity\User;
@@ -31,6 +32,28 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: 'is_granted("ROLE_USER_EDIT")'
         ),
         new Delete(),
+        new Post(
+            uriTemplate: '/users/{id}/follow',
+            input: false, 
+            security: 'is_granted("ROLE_USER")',
+            status: 204,
+            name: 'user_follow',
+            processor: \App\State\UserSubscriptionProcessor::class,
+            openapi: new \ApiPlatform\OpenApi\Model\Operation(
+                summary: 'Подписаться на пользователя',
+            ),
+        ),
+        new Post(
+            uriTemplate: '/users/{id}/unfollow',
+            input: false,
+            security: 'is_granted("ROLE_USER")',
+            status: 204,
+            name: 'user_unfollow',
+            processor: \App\State\UserSubscriptionProcessor::class,
+            openapi: new \ApiPlatform\OpenApi\Model\Operation(
+                summary: 'Отписаться от пользователя',
+            ),
+        ),
     ],
     paginationItemsPerPage: 5,
     security: 'is_granted("ROLE_USER")',
@@ -40,6 +63,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'lastName' => 'partial',
+    'id' => 'exact',
 ])]
 #[PostsAllowedAuthorChange]
 class UserApi
@@ -68,4 +92,18 @@ class UserApi
      * @var array<int, BlogPostApi>
      */
     public array $blogPosts = [];
+
+    #[ApiProperty(readable: true, writable: false)]
+    public int $followersCount = 0;
+
+    #[ApiProperty(readable: true, writable: false)]
+    public int $followingCount = 0;
+
+     /** @var array<int, self> */
+    #[ApiProperty(readable: true, writable: false)]
+    public array $followersPreview = [];
+
+    /** @var array<int, self> */
+    #[ApiProperty(readable: true, writable: false)]
+    public array $followingPreview = [];
 }
