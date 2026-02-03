@@ -16,7 +16,6 @@ use App\State\UserSubscriptionProcessor;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use App\Entity\User;
-use App\Validator\PostsAllowedAuthorChange;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
@@ -65,7 +64,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     'lastName' => 'partial',
     'id' => 'exact',
 ])]
-#[PostsAllowedAuthorChange]
 class UserApi
 {   
     #[ApiProperty(identifier: true, readable: true, writable: false)]
@@ -87,11 +85,6 @@ class UserApi
 
     #[ApiProperty(writable: true)]
     public mixed $avatar = null; 
-
-    /**
-     * @var array<int, BlogPostApi>
-     */
-    public array $blogPosts = [];
 
     #[ApiProperty(readable: true, writable: false)]
     public int $followersCount = 0;

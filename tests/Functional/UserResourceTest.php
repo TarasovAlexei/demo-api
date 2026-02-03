@@ -55,32 +55,21 @@ class UserResourceTest extends ApiTestCase
             ->assertStatus(200);;
     }
 
-    public function testPostsCanBeRemoved(): void
+    public function testPostsCanBeListedByAuthor(): void
     {
         $user = UserFactory::createOne();
-        $otherUser = UserFactory::createOne();
-
-        $blogPost = BlogPostFactory::createOne(['author' => $user]);
+        BlogPostFactory::createOne(['author' => $user]);
         BlogPostFactory::createOne(['author' => $user]);
 
         $this->browser()
             ->actingAs($user)
-            ->patch('/api/users/' . $user->getId(), [
-                'json' => [
-                    'blogPosts' => [
-                        '/api/posts/' . $blogPost->getId(),
-                    ],
-                ],
-                'headers' => ['Content-Type' => 'application/merge-patch+json']
-            ])
-            ->assertStatus(200)
-            ->get('/api/users/' . $user->getId())
-            ->assertJsonMatches('length("blogPosts")', 1)
-            ->assertJsonMatches('blogPosts[0]', '/api/posts/' . $blogPost->getId())
+            ->get('/api/posts?author=' . $user->getId())
+            ->assertJsonMatches('length("member")', 2)
         ;
     }
 
-    public function testPostsCannotBeStolen(): void
+
+    /*public function testPostsCannotBeStolen(): void
     {
         $user = UserFactory::createOne();
         $otherUser = UserFactory::createOne();
@@ -99,6 +88,7 @@ class UserResourceTest extends ApiTestCase
             ])
             ->assertStatus(422);
     }
+    */
 
     public function testUnpublishedPostsNotReturned(): void
     {
@@ -110,8 +100,8 @@ class UserResourceTest extends ApiTestCase
 
         $this->browser()
             ->actingAs(UserFactory::createOne())
-            ->get('/api/users/' . $user->getId())
-            ->assertJsonMatches('length("blogPosts")', 0);
+            ->get('/api/posts?author=' . $user->getId())
+            ->assertJsonMatches('length("member")', 0);
     }
 
     public function testUserSubscriptionFlow(): void

@@ -10,12 +10,14 @@ use App\Entity\User;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
+use Vich\UploaderBundle\Storage\StorageInterface; 
 
 #[AsMapper(from: User::class, to: UserApi::class)]
 class UserEntityToApiMapper implements MapperInterface
 {
     public function __construct(
         private MicroMapperInterface $microMapper,
+        private StorageInterface $storage, 
     ) {
     }
 
@@ -40,22 +42,27 @@ class UserEntityToApiMapper implements MapperInterface
         $to->email = $from->getEmail();
         $to->firstName = $from->getFirstName();
         $to->lastName = $from->getLastName();
+        $to->followersCount = $from->getFollowers()->count();
+        $to->followingCount = $from->getFollowing()->count();
 
-       $to->blogPosts = array_values(array_map(function (BlogPost $blogPost) use ($context) {
-            return $this->microMapper->map($blogPost, BlogPostApi::class, [
-            MicroMapperInterface::MAX_DEPTH => 0,
-            ...$context
+        if ($from->getAvatar()) {
+            $avatarDto = $this->microMapper->map($from->getAvatar(), MediaObjectApi::class, $context);
+            
+            $avatarDto->contentUrl = $this->storage->resolveUri($from->getAvatar(), 'file');
+            
+            $to->avatar = $avatarDto;
+        }
+
+        $mapShortUser = function (User $user) use ($context) {
+            return $this->microMapper->map($user, UserApi::class, [
+                ...$context,
+                'is_preview' => true
             ]);
-        }, $from->getPublishedBlogPosts()->toArray()));
+        };
 
-         if ($from->getAvatar()) {
-            $to->avatar = $this->microMapper->map(
-                $from->getAvatar(), 
-                MediaObjectApi::class, 
-                $context
-            );
-        } else {
-            $to->avatar = null;
+        if (!($context['is_preview'] ?? false)) {
+            $to->followersPreview = array_map($mapShortUser, $from->getFollowers()->slice(0, 8));
+            $to->followingPreview = array_map($mapShortUser, $from->getFollowing()->slice(0, 8));
         }
 
         return $to;
