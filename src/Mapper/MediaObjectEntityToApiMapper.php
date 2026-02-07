@@ -34,7 +34,9 @@ class MediaObjectEntityToApiMapper implements MapperInterface
             throw new \InvalidArgumentException('Unexpected types for mapping');
         }
 
-        $to->contentUrl = $this->storage->resolveUri($from, 'file');
+        $path = $this->storage->resolveUri($from, 'file');
+
+        $to->contentUrl = $path ?? ($from->getFilePath() ? '/media/avatars/' . $from->getFilePath() : null);
 
         return $to;
     }

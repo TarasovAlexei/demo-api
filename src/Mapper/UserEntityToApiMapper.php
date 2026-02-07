@@ -10,14 +10,12 @@ use App\Entity\User;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
-use Vich\UploaderBundle\Storage\StorageInterface; 
 
 #[AsMapper(from: User::class, to: UserApi::class)]
 class UserEntityToApiMapper implements MapperInterface
 {
     public function __construct(
         private MicroMapperInterface $microMapper,
-        private StorageInterface $storage, 
     ) {
     }
 
@@ -45,12 +43,8 @@ class UserEntityToApiMapper implements MapperInterface
         $to->followersCount = $from->getFollowers()->count();
         $to->followingCount = $from->getFollowing()->count();
 
-        if ($from->getAvatar()) {
-            $avatarDto = $this->microMapper->map($from->getAvatar(), MediaObjectApi::class, $context);
-            
-            $avatarDto->contentUrl = $this->storage->resolveUri($from->getAvatar(), 'file');
-            
-            $to->avatar = $avatarDto;
+       if ($from->getAvatar()) {
+            $to->avatar = $this->microMapper->map($from->getAvatar(), MediaObjectApi::class, $context);
         }
 
         $mapShortUser = function (User $user) use ($context) {
