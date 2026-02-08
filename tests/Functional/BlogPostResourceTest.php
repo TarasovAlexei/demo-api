@@ -11,10 +11,12 @@ use Zenstruck\Browser\HttpOptions;
 use Zenstruck\Browser\Json;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Messenger\Test\InteractsWithMessenger;
 
 class BlogPostResourceTest extends ApiTestCase
 {
     use ResetDatabase;
+    use InteractsWithMessenger; 
 
     public function testGetCollectionOfPosts(): void
     {
@@ -208,6 +210,12 @@ class BlogPostResourceTest extends ApiTestCase
             ->assertJsonMatches('isPublished', true)
         ;
 
+        $this->transport('async')->queue()->assertContains(\App\Message\PostPublishedNotification::class);
+        $this->transport('async')->process();
+
         NotificationFactory::repository()->assert()->count(1);
+        
+        $notification = NotificationFactory::repository()->first();
+        $this->assertSame('Post has been published!', $notification->getMessage());
     }
 }

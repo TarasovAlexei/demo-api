@@ -5,36 +5,28 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\BlogPostApi;
-use App\Entity\BlogPody;
-use App\Entity\Notification;
-use App\Repository\BlogPostRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Message\PostPublishedNotification;
+use Symfony\Component\Messenger\MessageBusInterface;
 
-class BlogPostStateProcessor implements ProcessorInterface
+final readonly class BlogPostStateProcessor implements ProcessorInterface
 {
     public function __construct(
         private EntityClassDtoStateProcessor $innerProcessor,
-        private EntityManagerInterface $entityManager,
-        private BlogPostRepository $repository,
-    )
-    {
+        private MessageBusInterface $bus,
+    ) {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
     {
         $result = $this->innerProcessor->process($data, $operation, $uriVariables, $context);
 
         $previousData = $context['previous_data'] ?? null;
+
         if ($previousData instanceof BlogPostApi
             && $data->isPublished
             && $previousData->isPublished !== $data->isPublished
         ) {
-            $entity = $this->repository->find($data->id);
-            $notification = new Notification();
-            $notification->setBlogPost($entity);
-            $notification->setMessage('Post has been published!');
-            $this->entityManager->persist($notification);
-            $this->entityManager->flush();
+            $this->bus->dispatch(new PostPublishedNotification($data->id));
         }
 
         return $result;
