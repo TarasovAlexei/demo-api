@@ -20,4 +20,5 @@ return [
     Symfonycasts\TailwindBundle\SymfonycastsTailwindBundle::class => ['all' => true],
     Symfonycasts\MicroMapper\SymfonycastsMicroMapperBundle::class => ['all' => true],
     Vich\UploaderBundle\VichUploaderBundle::class => ['all' => true],
+    Zenstruck\Messenger\Test\ZenstruckMessengerTestBundle::class => ['test' => true],
 ];
