@@ -1,0 +1,26 @@
+# Специфичные папки Symfony
+var/cache/*
+var/log/*
+!var/cache/.gitkeep
+!var/log/.gitkeep
+
+# Зависимости 
+vendor/
+node_modules/
+
+# Секреты и локальные настройки
+.env.local
+.env.local.php
+.env.*.local
+
+# Системные файлы и Git
+.git
+.gitignore
+.dockerignore
+docker-compose*.yml
+
+# Файлы IDE и ОС
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
