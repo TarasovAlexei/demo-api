@@ -25,6 +25,13 @@ final class PostPublishedNotificationHandler
             return;
         }
 
+        $existing = $this->entityManager->getRepository(Notification::class)
+        ->findOneBy(['blogPost' => $entity]);
+
+        if ($existing) {
+            return; 
+        }
+
         $notification = new Notification();
         $notification->setBlogPost($entity);
         $notification->setMessage('Post has been published!');

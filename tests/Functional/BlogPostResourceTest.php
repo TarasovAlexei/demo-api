@@ -213,6 +213,8 @@ class BlogPostResourceTest extends ApiTestCase
         $this->transport('async')->queue()->assertContains(\App\Message\PostPublishedNotification::class);
         $this->transport('async')->process();
 
+        $this->transport('async')->queue()->assertEmpty();
+
         NotificationFactory::repository()->assert()->count(1);
         
         $notification = NotificationFactory::repository()->first();

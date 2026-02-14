@@ -1,10 +1,22 @@
 framework:
     messenger:
         transports:
-            async: '%env(resolve:MESSENGER_TRANSPORT_DSN)%'
+            async:
+                dsn: '%env(resolve:MESSENGER_TRANSPORT_DSN)%'
+                retry_strategy:
+                    max_retries: 3         
+                    delay: 1000             
+                    multiplier: 2           
+                    max_delay: 10000        
 
         routing:
             'App\Message\PostPublishedNotification': async
+        
+        #Шина с поддержкой транзакций
+        buses:
+            messenger.bus.default:
+                middleware:
+                    - doctrine_transaction
 
 when@test:
     framework:
