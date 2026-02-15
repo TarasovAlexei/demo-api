@@ -84,13 +84,16 @@ class UserApi
     public ?string $password = null;
 
     #[ApiProperty(writable: true)]
-    public mixed $avatar = null; 
+    public mixed $avatar = null;
 
     #[ApiProperty(readable: true, writable: false)]
     public int $followersCount = 0;
 
     #[ApiProperty(readable: true, writable: false)]
     public int $followingCount = 0;
+
+    #[ApiProperty(readable: true, writable: false)]
+    public bool $isSubscribed = false;
 
      /** @var array<int, self> */
     #[ApiProperty(readable: true, writable: false)]

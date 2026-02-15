@@ -10,12 +10,14 @@ use App\Entity\User;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 #[AsMapper(from: User::class, to: UserApi::class)]
 class UserEntityToApiMapper implements MapperInterface
 {
     public function __construct(
         private MicroMapperInterface $microMapper,
+        private Security $security, 
     ) {
     }
 
@@ -40,6 +42,14 @@ class UserEntityToApiMapper implements MapperInterface
         $to->email = $from->getEmail();
         $to->firstName = $from->getFirstName();
         $to->lastName = $from->getLastName();
+
+          $currentUser = $this->security->getUser();
+    
+        if (!($context['is_preview'] ?? false) && $currentUser instanceof User) {
+            $to->isSubscribed = $from->getFollowers()->contains($currentUser);
+        }
+
+
         $to->followersCount = $from->getFollowers()->count();
         $to->followingCount = $from->getFollowing()->count();
 
