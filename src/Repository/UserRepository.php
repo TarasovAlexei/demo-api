@@ -67,6 +67,26 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ', ['id' => $userId]) ?: ['followers' => 0, 'following' => 0];
     }
 
+    public function getFollowingIdsInList(int $followerId, array $targetIds): array
+    {
+        if (empty($targetIds)) {
+            return [];
+        }
+
+        $result = $this->getEntityManager()
+            ->createQuery('SELECT target.id 
+                           FROM App\Entity\User u 
+                           JOIN u.following target 
+                           WHERE u.id = :followerId AND target.id IN (:targetIds)')
+            ->setParameters([
+                'followerId' => $followerId,
+                'targetIds' => $targetIds
+            ])
+            ->getScalarResult();
+
+        return array_column($result, 'id');
+    }
+
     /**
      * Базовый подсчет количества для пагинации.
      */

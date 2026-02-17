@@ -51,10 +51,14 @@ class UserEntityToApiMapper implements MapperInterface
             $to->followingCount = (int) $counts['following'];
         }
 
+        if (isset($context['subscribed_ids'])) {
+            $to->isSubscribed = in_array($from->getId(), $context['subscribed_ids']);
+        } else {
             $currentUser = $this->security->getUser();
             $to->isSubscribed = ($currentUser instanceof User && $currentUser->getId() !== $from->getId())
                 ? $this->userRepository->isFollowing($currentUser->getId(), $from->getId())
                 : false;
+        }
 
         if ($from->getAvatar()) {
             $to->avatar = $this->microMapper->map($from->getAvatar(), MediaObjectApi::class, $context);
