@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiProperty;
+use App\State\UserRelationshipProvider;
 use App\State\UserSubscriptionProcessor;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
@@ -21,16 +22,39 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     shortName: 'User',
     operations: [
-        new Get(),
-        new GetCollection(),
+        new Get(openapi: new \ApiPlatform\OpenApi\Model\Operation(tags: ['User: Profile'])),
+        new GetCollection(openapi: new \ApiPlatform\OpenApi\Model\Operation(tags: ['User: Profile'])),
         new Post(
             validationContext: ['groups' => ['Default', 'postValidation']],
             security: 'is_granted("PUBLIC_ACCESS")',
+            openapi: new \ApiPlatform\OpenApi\Model\Operation(
+                summary: 'Регистрация',
+                tags: ['User: Profile']
+            ),
         ),
         new Patch(
-            security: 'is_granted("ROLE_USER_EDIT")'
+            security: 'is_granted("ROLE_USER_EDIT")',
+            openapi: new \ApiPlatform\OpenApi\Model\Operation(tags: ['User: Profile'])
         ),
-        new Delete(),
+        new Delete(openapi: new \ApiPlatform\OpenApi\Model\Operation(tags: ['User: Profile'])),
+        new GetCollection(
+            uriTemplate: '/users/{id}/followers',
+            name: 'user_followers',
+            provider: \App\State\UserRelationshipProvider::class,
+            openapi: new \ApiPlatform\OpenApi\Model\Operation(
+                summary: 'Список подписчиков',
+                tags: ['User: Social Lists']
+            ),
+        ),
+        new GetCollection(
+            uriTemplate: '/users/{id}/following',
+            name: 'user_following',
+            provider: \App\State\UserRelationshipProvider::class,
+            openapi: new \ApiPlatform\OpenApi\Model\Operation(
+                summary: 'Список подписок',
+                tags: ['User: Social Lists']
+            ),
+        ),
         new Post(
             uriTemplate: '/users/{id}/follow',
             input: false, 
@@ -40,6 +64,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             processor: \App\State\UserSubscriptionProcessor::class,
             openapi: new \ApiPlatform\OpenApi\Model\Operation(
                 summary: 'Подписаться на пользователя',
+                tags: ['User: Social Actions']
             ),
         ),
         new Post(
@@ -51,10 +76,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             processor: \App\State\UserSubscriptionProcessor::class,
             openapi: new \ApiPlatform\OpenApi\Model\Operation(
                 summary: 'Отписаться от пользователя',
+                tags: ['User: Social Actions']
             ),
         ),
     ],
-    paginationItemsPerPage: 5,
+    paginationItemsPerPage: 10,
     security: 'is_granted("ROLE_USER")',
     provider: EntityToDtoStateProvider::class,
     processor: EntityClassDtoStateProcessor::class,
@@ -95,11 +121,4 @@ class UserApi
     #[ApiProperty(readable: true, writable: false)]
     public bool $isSubscribed = false;
 
-     /** @var array<int, self> */
-    #[ApiProperty(readable: true, writable: false)]
-    public array $followersPreview = [];
-
-    /** @var array<int, self> */
-    #[ApiProperty(readable: true, writable: false)]
-    public array $followingPreview = [];
 }

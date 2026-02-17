@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -20,7 +21,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * Used to upgrade (rehash) the user's password automatically over time.
+     * Используется Symfony Security для обновления хеша пароля.
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
@@ -33,28 +34,81 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    //    /**
-    //     * @return User[] Returns an array of User objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Поиск списка подписчиков или подписок с предзагрузкой аватаров.
+     */
+    public function findRelationshipsPaginated(string $type, int $userId, int $offset, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->leftJoin('u.avatar', 'a')->addSelect('a')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
 
-    //    public function findOneBySomeField($value): ?User
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $relation = ($type === 'followers') ? 'u.following' : 'u.followers';
+
+        $qb->innerJoin($relation, 'target')
+            ->where('target.id = :userId')
+            ->setParameter('userId', $userId);
+
+        $paginator = new Paginator($qb->getQuery());
+
+        return iterator_to_array($paginator->getIterator());
+    }
+
+    /**
+     * Получение счетчиков (followers/following) ОДНИМ запросом через Native SQL.
+     */
+    public function getCounts(int $userId): array
+    {
+        return $this->getEntityManager()->getConnection()->fetchAssociative('
+            SELECT 
+                (SELECT COUNT(*) FROM subscriptions WHERE user_target = :id) as followers,
+                (SELECT COUNT(*) FROM subscriptions WHERE user_source = :id) as following
+        ', ['id' => $userId]) ?: ['followers' => 0, 'following' => 0];
+    }
+
+    /**
+     * Базовый подсчет количества для пагинации.
+     */
+    public function countRelationships(string $type, int $userId): int
+    {
+        $qb = $this->createQueryBuilder('u')->select('COUNT(u.id)');
+        $relation = ($type === 'followers') ? 'u.following' : 'u.followers';
+
+        return (int) $qb->innerJoin($relation, 'target')
+            ->where('target.id = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Проверка подписки для одного конкретного профиля.
+     */
+    public function isFollowing(int $followerId, int $followedId): bool
+    {
+        return (bool) $this->getEntityManager()
+            ->createQuery('SELECT COUNT(target.id) 
+                        FROM App\Entity\User u 
+                        JOIN u.following target 
+                        WHERE u.id = :followerId AND target.id = :followedId')
+            ->setParameters([
+                'followerId' => $followerId,
+                'followedId' => $followedId
+            ])
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Получение юзера со всеми данными для профиля (включая аватар) за 1 запрос.
+     */
+    public function findUserForProfile(int $id): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.avatar', 'a')->addSelect('a')
+            ->where('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
