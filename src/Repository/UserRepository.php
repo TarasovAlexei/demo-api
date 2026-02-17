@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -33,28 +34,40 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    //    /**
-    //     * @return User[] Returns an array of User objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Поиск списка подписчиков или подписок с предзагрузкой аватаров.
+     */
+    public function findRelationshipsPaginated(string $type, int $userId, int $offset, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->leftJoin('u.avatar', 'a')->addSelect('a')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
 
-    //    public function findOneBySomeField($value): ?User
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        // Определяем направление связи
+        $relation = ($type === 'followers') ? 'u.following' : 'u.followers';
+
+        $qb->innerJoin($relation, 'target')
+            ->where('target.id = :userId')
+            ->setParameter('userId', $userId);
+
+        $paginator = new Paginator($qb->getQuery());
+
+        return iterator_to_array($paginator->getIterator());
+    }
+
+    /**
+     * Базовый подсчет количества для пагинации.
+     */
+    public function countRelationships(string $type, int $userId): int
+    {
+        $qb = $this->createQueryBuilder('u')->select('COUNT(u.id)');
+        $relation = ($type === 'followers') ? 'u.following' : 'u.followers';
+
+        return (int) $qb->innerJoin($relation, 'target')
+            ->where('target.id = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery
+            ->getSingleScalarResult();
+    }
 }
