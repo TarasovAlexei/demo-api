@@ -21,7 +21,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * Used to upgrade (rehash) the user's password automatically over time.
+     * Используется Symfony Security для обновления хеша пароля.
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
@@ -57,6 +57,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
+     * Получение счетчиков (followers/following) ОДНИМ запросом через Native SQL.
+     * Это гораздо быстрее, чем два отдельных DQL запроса.
+     */
+    public function getCounts(int $userId): array
+    {
+        return $this->getEntityManager()->getConnection()->fetchAssociative('
+            SELECT 
+                (SELECT COUNT(*) FROM subscriptions WHERE user_target = :id) as followers,
+                (SELECT COUNT(*) FROM subscriptions WHERE user_source = :id) as following
+        ', ['id' => $userId]) ?: ['followers' => 0, 'following' => 0];
+    }
+
+    /**
      * Базовый подсчет количества для пагинации.
      */
     public function countRelationships(string $type, int $userId): int
@@ -67,7 +80,37 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return (int) $qb->innerJoin($relation, 'target')
             ->where('target.id = :userId')
             ->setParameter('userId', $userId)
-            ->getQuery
+            ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * Проверка подписки для одного конкретного профиля.
+     */
+    public function isFollowing(int $followerId, int $followedId): bool
+    {
+        return (bool) $this->getEntityManager()
+            ->createQuery('SELECT COUNT(target.id) 
+                        FROM App\Entity\User u 
+                        JOIN u.following target 
+                        WHERE u.id = :followerId AND target.id = :followedId')
+            ->setParameters([
+                'followerId' => $followerId,
+                'followedId' => $followedId
+            ])
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Получение юзера со всеми данными для профиля (включая аватар) за 1 запрос.
+     */
+    public function findUserForProfile(int $id): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.avatar', 'a')->addSelect('a')
+            ->where('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }
