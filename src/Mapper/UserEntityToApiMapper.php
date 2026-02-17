@@ -3,21 +3,21 @@
 namespace App\Mapper;
 
 use App\ApiResource\MediaObjectApi;
-use App\ApiResource\BlogPostApi;
 use App\ApiResource\UserApi;
-use App\Entity\BlogPost;
 use App\Entity\User;
+use App\Repository\UserRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 
 #[AsMapper(from: User::class, to: UserApi::class)]
 class UserEntityToApiMapper implements MapperInterface
 {
     public function __construct(
-        private MicroMapperInterface $microMapper,
-        private Security $security, 
+        private readonly MicroMapperInterface $microMapper,
+        private readonly Security $security,
+        private readonly UserRepository $userRepository,
     ) {
     }
 
@@ -43,30 +43,21 @@ class UserEntityToApiMapper implements MapperInterface
         $to->firstName = $from->getFirstName();
         $to->lastName = $from->getLastName();
 
-          $currentUser = $this->security->getUser();
-    
-        if (!($context['is_preview'] ?? false) && $currentUser instanceof User) {
-            $to->isSubscribed = $from->getFollowers()->contains($currentUser);
+        $isListView = $context['is_list_view'] ?? false;
+
+        if (!$isListView) {
+            $counts = $this->userRepository->getCounts($from->getId());
+            $to->followersCount = (int) $counts['followers'];
+            $to->followingCount = (int) $counts['following'];
         }
 
+            $currentUser = $this->security->getUser();
+            $to->isSubscribed = ($currentUser instanceof User && $currentUser->getId() !== $from->getId())
+                ? $this->userRepository->isFollowing($currentUser->getId(), $from->getId())
+                : false;
 
-        $to->followersCount = $from->getFollowers()->count();
-        $to->followingCount = $from->getFollowing()->count();
-
-       if ($from->getAvatar()) {
+        if ($from->getAvatar()) {
             $to->avatar = $this->microMapper->map($from->getAvatar(), MediaObjectApi::class, $context);
-        }
-
-        $mapShortUser = function (User $user) use ($context) {
-            return $this->microMapper->map($user, UserApi::class, [
-                ...$context,
-                'is_preview' => true
-            ]);
-        };
-
-        if (!($context['is_preview'] ?? false)) {
-            $to->followersPreview = array_map($mapShortUser, $from->getFollowers()->slice(0, 8));
-            $to->followingPreview = array_map($mapShortUser, $from->getFollowing()->slice(0, 8));
         }
 
         return $to;

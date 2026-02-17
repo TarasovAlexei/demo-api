@@ -56,7 +56,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * Получение счетчиков (followers/following) ОДНИМ запросом через Native SQL.
+     * Получение счетчиков (followers/following) одним запросом через Native SQL.
      */
     public function getCounts(int $userId): array
     {
