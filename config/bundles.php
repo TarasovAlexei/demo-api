@@ -21,4 +21,5 @@ return [
     Symfonycasts\MicroMapper\SymfonycastsMicroMapperBundle::class => ['all' => true],
     Vich\UploaderBundle\VichUploaderBundle::class => ['all' => true],
     Zenstruck\Messenger\Test\ZenstruckMessengerTestBundle::class => ['test' => true],
+    Liip\ImagineBundle\LiipImagineBundle::class => ['all' => true],
 ];
