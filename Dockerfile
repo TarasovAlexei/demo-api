@@ -13,8 +13,18 @@ RUN apk add --no-cache \
     unzip \
     git
 
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
+RUN apk add --no-cache \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libwebp-dev \
+    libzip-dev \
+    icu-dev \
+    postgresql-dev
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
+
+RUN docker-php-ext-install -j$(nproc) \
     pdo_pgsql \
     intl \
     zip \

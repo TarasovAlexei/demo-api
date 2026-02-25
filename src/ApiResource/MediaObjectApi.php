@@ -60,4 +60,7 @@ class MediaObjectApi
 
     #[ApiProperty(readable: true, writable: false)]
     public ?string $contentUrl = null;
+
+    #[ApiProperty(readable: true, writable: false)]
+    public ?string $thumbUrl = null;
 }

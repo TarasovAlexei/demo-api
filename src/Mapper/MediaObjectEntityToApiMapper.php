@@ -4,15 +4,19 @@ namespace App\Mapper;
 
 use App\ApiResource\MediaObjectApi;
 use App\Entity\MediaObject;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager; 
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Vich\UploaderBundle\Storage\StorageInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 
 #[AsMapper(from: MediaObject::class, to: MediaObjectApi::class)]
 class MediaObjectEntityToApiMapper implements MapperInterface
 {
     public function __construct(
-        private StorageInterface $storage
+        private StorageInterface $storage,
+        private CacheManager $cacheManager 
     ) {
     }
 
@@ -28,6 +32,7 @@ class MediaObjectEntityToApiMapper implements MapperInterface
         return $dto;
     }
 
+
     public function populate(object $from, object $to, array $context): object
     {
         if (!$from instanceof MediaObject || !$to instanceof MediaObjectApi) {
@@ -36,8 +41,19 @@ class MediaObjectEntityToApiMapper implements MapperInterface
 
         $path = $this->storage->resolveUri($from, 'file');
 
-        $to->contentUrl = $path ?? ($from->getFilePath() ? '/media/avatars/' . $from->getFilePath() : null);
+        if ($path) {
+            $to->contentUrl = $path;
+            $to->thumbUrl = $this->cacheManager->generateUrl(
+                $path, 
+                'avatar_min', 
+                [], 
+                null, 
+                UrlGeneratorInterface::RELATIVE_PATH
+            );
+        }
 
         return $to;
     }
+
+
 }
