@@ -1,13 +1,29 @@
-import { registerVueControllerComponents } from '@symfony/ux-vue';
-import './stimulus_bootstrap.js';
-/*
- * Welcome to your app's main JavaScript file!
- *
- * We recommend including the built version of this JavaScript file
- * (and its CSS file) in your base layout (base.html.twig).
- */
-
-// any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
+import './stimulus_bootstrap.js';
+import { registerVueControllerComponents } from '@symfony/ux-vue';
+import { createApp } from 'vue';
+
+import * as Turbo from '@hotwired/turbo';
+
+Turbo.start();
+
+import AppHeader from './vue/controllers/AppHeader.vue'; 
 
 registerVueControllerComponents(require.context('./vue/controllers', true, /\.vue$/));
+
+let headerInstance = null;
+
+function mountHeader() {
+    const root = document.getElementById('vue-header-app');
+    
+    if (root && !headerInstance) {
+        headerInstance = createApp(AppHeader);
+        headerInstance.mount(root);
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mountHeader);
+} else {
+    mountHeader();
+}
