@@ -1939,6 +1939,16 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         post_processors?: array<string, array<string, mixed>>,
  *     },
  * }
+ * @psalm-type TurboConfig = array{
+ *     broadcast?: bool|array{
+ *         enabled?: bool, // Default: true
+ *         entity_template_prefixes?: list<scalar|null>,
+ *         doctrine_orm?: bool|array{ // Enable the Doctrine ORM integration
+ *             enabled?: bool, // Default: true
+ *         },
+ *     },
+ *     default_transport?: scalar|null, // Default: "default"
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1958,6 +1968,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *     symfonycasts_micro_mapper?: SymfonycastsMicroMapperConfig,
  *     vich_uploader?: VichUploaderConfig,
  *     liip_imagine?: LiipImagineConfig,
+ *     turbo?: TurboConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1981,6 +1992,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         symfonycasts_micro_mapper?: SymfonycastsMicroMapperConfig,
  *         vich_uploader?: VichUploaderConfig,
  *         liip_imagine?: LiipImagineConfig,
+ *         turbo?: TurboConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -2001,6 +2013,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         symfonycasts_micro_mapper?: SymfonycastsMicroMapperConfig,
  *         vich_uploader?: VichUploaderConfig,
  *         liip_imagine?: LiipImagineConfig,
+ *         turbo?: TurboConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -2023,6 +2036,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         symfonycasts_micro_mapper?: SymfonycastsMicroMapperConfig,
  *         vich_uploader?: VichUploaderConfig,
  *         liip_imagine?: LiipImagineConfig,
+ *         turbo?: TurboConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

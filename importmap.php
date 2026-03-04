@@ -47,4 +47,7 @@ return [
     '@symfony/ux-vue' => [
         'path' => './vendor/symfony/ux-vue/assets/dist/loader.js',
     ],
+    '@hotwired/turbo' => [
+        'version' => '8.0.23',
+    ],
 ];

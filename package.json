@@ -3,7 +3,9 @@
         "@babel/core": "^7.17.0",
         "@babel/preset-env": "^7.16.0",
         "@hotwired/stimulus": "^3.0.0",
+        "@hotwired/turbo": "^8.0.23",
         "@symfony/stimulus-bridge": "^3.2.0 || ^4.0.0",
+        "@symfony/ux-turbo": "^2.32.0",
         "@symfony/ux-vue": "file:vendor/symfony/ux-vue/assets",
         "@symfony/webpack-encore": "^5.1.0",
         "core-js": "^3.38.0",
@@ -20,5 +22,9 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress"
+    },
+    "dependencies": {
+        "axios": "^1.13.6",
+        "pinia": "^3.0.4"
     }
 }
