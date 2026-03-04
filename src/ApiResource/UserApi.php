@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiProperty;
+use App\State\MeProvider;
 use App\State\UserRelationshipProvider;
 use App\State\UserSubscriptionProcessor;
 use App\State\EntityClassDtoStateProcessor;
@@ -40,6 +41,16 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Delete(
             security: 'is_granted("USER_DELETE", object)',
             openapi: new \ApiPlatform\OpenApi\Model\Operation(tags: ['User: Profile'])
+        ),
+        new Get(
+            uriTemplate: '/me',
+            uriVariables: [], 
+            priority: 10,
+            provider: \App\State\MeProvider::class,
+            openapi: new \ApiPlatform\OpenApi\Model\Operation(
+                summary: 'Данные текущего пользователя',
+                tags: ['User: Current Auth']
+            ),
         ),
         new GetCollection(
             uriTemplate: '/users/{id}/followers',
