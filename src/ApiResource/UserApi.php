@@ -33,10 +33,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             ),
         ),
         new Patch(
-            security: 'is_granted("ROLE_USER_EDIT")',
+            security: 'is_granted("USER_EDIT", object)', 
             openapi: new \ApiPlatform\OpenApi\Model\Operation(tags: ['User: Profile'])
         ),
-        new Delete(openapi: new \ApiPlatform\OpenApi\Model\Operation(tags: ['User: Profile'])),
+
+        new Delete(
+            security: 'is_granted("USER_DELETE", object)',
+            openapi: new \ApiPlatform\OpenApi\Model\Operation(tags: ['User: Profile'])
+        ),
         new GetCollection(
             uriTemplate: '/users/{id}/followers',
             name: 'user_followers',
