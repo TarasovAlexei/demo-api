@@ -5,6 +5,6 @@
  {% block body %}
      <div {{ vue_component('UserProfile', {
         user: user_data,
-        tokens: app.user ? app.user.validTokenStrings : null 
-     }) }}></div>
+        currentUser: app.user ? { id: app.user.id } : null,
+    }) }}></div>
 {% endblock %}
